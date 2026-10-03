@@ -106,3 +106,52 @@ export const NOMBRE_ESTADO_CANJE: Record<EstadoCanje, string> = {
   vencido: "Vencido",
   anulado: "Anulado",
 };
+
+/** Acciones de auditoría (F2–F4) en lenguaje de la interfaz. */
+export const NOMBRE_ACCION: Record<string, string> = {
+  "cliente.registrado": "Registro de la cuenta",
+  "cliente.actualizado": "Datos actualizados por un administrador",
+  "cliente.eliminado": "Cuenta eliminada",
+  "perfil.actualizado": "Nombre actualizado por la persona",
+  "administrador.bootstrap": "Administrador inicial",
+  "administrador.creado": "Administrador creado",
+  "administrador.actualizado": "Administrador actualizado",
+  "administrador.eliminado": "Administrador eliminado",
+  "puntos.ajuste": "Ajuste de puntos",
+  "canje.entregado": "Canje entregado",
+  "canje.anulado": "Canje anulado",
+};
+
+const CAMPO: Record<string, string> = {
+  nombre: "nombre",
+  correo: "correo",
+  activo: "estado",
+};
+
+/** Resumen sin datos personales de un evento de auditoría. */
+export function detalleAccion(datos: Record<string, unknown>): string {
+  const partes: string[] = [];
+  if (Array.isArray(datos.campos) && datos.campos.length) {
+    partes.push(
+      `Cambió: ${(datos.campos as string[]).map((c) => CAMPO[c] ?? c).join(", ")}`,
+    );
+  }
+  const vinculo = datos.vinculo as
+    { antes: string; despues: string } | string | undefined;
+  if (
+    vinculo &&
+    typeof vinculo === "object" &&
+    vinculo.antes !== vinculo.despues
+  ) {
+    partes.push(
+      `vínculo: ${vinculo.despues === "vinculado" ? "vinculado" : "sin vínculo"}`,
+    );
+  }
+  const marcas = datos.marcas as { despues?: string[] } | undefined;
+  if (marcas && !Array.isArray(marcas) && marcas.despues) {
+    partes.push(
+      `marcas: ${marcas.despues.length ? marcas.despues.join(", ") : "ninguna"}`,
+    );
+  }
+  return partes.join(" · ");
+}

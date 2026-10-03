@@ -73,7 +73,7 @@ export function FormularioIngreso({
         );
         return;
       }
-      router.replace(rol === "administrador" ? "/admin/reglas" : "/inicio");
+      router.replace(rol === "administrador" ? "/admin/clientes" : "/inicio");
     } catch (e) {
       if (e instanceof ApiError && e.code === "REGISTRATION_REQUIRED") {
         if (rol === "cliente") {
@@ -81,6 +81,10 @@ export function FormularioIngreso({
           return;
         }
         await rechazar("Esta cuenta no tiene acceso de administración.");
+        return;
+      }
+      if (e instanceof ApiError && e.code === "EMAIL_NOT_VERIFIED") {
+        router.replace("/verificar-correo");
         return;
       }
       if (e instanceof ApiError && e.code === "FORBIDDEN") {

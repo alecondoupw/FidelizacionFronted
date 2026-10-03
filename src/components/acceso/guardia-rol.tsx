@@ -39,7 +39,7 @@ export function usePerfil(): MeResponse {
 const INICIO_POR_ROL: Record<Rol, { ruta: string; nombre: string }> = {
   cliente: { ruta: "/inicio", nombre: "tu cuenta de cliente" },
   administrador: {
-    ruta: "/admin/reglas",
+    ruta: "/admin/clientes",
     nombre: "el panel de administración",
   },
 };
@@ -87,6 +87,10 @@ export function GuardiaRol({
         }
         if (error.code === "FORBIDDEN") {
           await salir("cuenta-desactivada");
+          return null;
+        }
+        if (error.code === "EMAIL_NOT_VERIFIED") {
+          router.replace("/verificar-correo");
           return null;
         }
       }

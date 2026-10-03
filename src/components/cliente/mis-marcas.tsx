@@ -106,10 +106,10 @@ export function MisMarcas() {
                       variant: "outline",
                       className: "h-9",
                     })}
+                    aria-label={`Ver beneficios de ${NOMBRE_MARCA[marca]}`}
                   >
                     <Gift aria-hidden="true" />
                     Ver beneficios
-                    <span className="sr-only"> de {NOMBRE_MARCA[marca]}</span>
                   </Link>
                 </li>
               );

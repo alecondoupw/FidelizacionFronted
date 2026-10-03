@@ -163,7 +163,9 @@ describe("F1-FE-01 · ingreso de administrador (UI-01)", () => {
     );
     renderConSesion(<FormularioIngreso rol="administrador" />, sesion);
     await ingresar("admin@ejemplo.test");
-    await waitFor(() => expect(replace).toHaveBeenCalledWith("/admin/reglas"));
+    await waitFor(() =>
+      expect(replace).toHaveBeenCalledWith("/admin/clientes"),
+    );
   });
 
   it("cliente en el acceso de administración → rechazo sin revelar más", async () => {

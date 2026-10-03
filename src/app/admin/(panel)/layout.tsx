@@ -4,15 +4,23 @@ import {
   Gift,
   Hourglass,
   PlusCircle,
+  ShieldCheck,
   SlidersHorizontal,
   Ticket,
   UserRound,
+  Users,
 } from "lucide-react";
 import { GuardiaRol } from "@/components/acceso/guardia-rol";
 import { Shell, type ItemNavegacion } from "@/components/shell/shell";
 
-/** Secciones construidas del panel; crecen con F4–F6 (SRC-02 p. 8). */
+/** Secciones construidas del panel, en el orden de A03; crecen con F5–F6 (SRC-02 p. 8). */
 const ITEMS: ItemNavegacion[] = [
+  { href: "/admin/clientes", etiqueta: "Clientes", icono: Users },
+  {
+    href: "/admin/administradores",
+    etiqueta: "Administradores",
+    icono: ShieldCheck,
+  },
   {
     href: "/admin/reglas",
     etiqueta: "Reglas de puntos",

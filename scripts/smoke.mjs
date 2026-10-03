@@ -67,6 +67,22 @@ const checks = [
     marker: "Cargando tu cuenta",
     ausente: "Código de canje",
   },
+  {
+    path: "/admin/clientes",
+    marker: "Cargando tu cuenta",
+    ausente: "Buscar por correo completo",
+  },
+  {
+    path: "/admin/clientes/u-ejemplo",
+    marker: "Cargando tu cuenta",
+    ausente: "Eliminar cliente",
+  },
+  {
+    path: "/admin/administradores",
+    marker: "Cargando tu cuenta",
+    ausente: "Nuevo administrador",
+  },
+  { path: "/verificar-correo", marker: "Verifica tu nuevo correo" },
   { path: "/diagnostico", marker: "Conexión frontend → backend" },
 ];
 

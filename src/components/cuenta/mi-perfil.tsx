@@ -1,12 +1,16 @@
 "use client";
 
-import { LogOut, ShieldCheck, UserRound } from "lucide-react";
+import { KeyRound, LogOut, Pencil, ShieldCheck, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { usePerfil } from "@/components/acceso/guardia-rol";
+import { Campo } from "@/components/acceso/campo";
 import { EncabezadoPagina } from "@/components/shell/shell";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { actualizarMiNombre } from "@/lib/api/identidades";
+import { mensajeError } from "@/lib/auth/mensajes";
 import { useSesion } from "@/lib/auth/sesion";
 import { NOMBRE_MARCA } from "@/lib/marcas";
 
@@ -16,8 +20,9 @@ const FECHA = new Intl.DateTimeFormat("es-BO", {
 });
 
 /**
- * UI-18 (cliente, C03) y UI-22 (admin, A04), sólo consulta (F1-FE-03).
- * La edición de datos y el cambio de contraseña esperan DEC-08 (F4-FE-03).
+ * UI-18 (cliente, C03) y UI-22 (admin, A04). Según DEC-08 cada persona edita
+ * sólo su nombre; el correo lo cambia un administrador y la contraseña se
+ * cambia con el correo de restablecimiento de Firebase (F4-FE-03).
  */
 export function MiPerfil({ rutaAcceso }: { rutaAcceso: string }) {
   const me = usePerfil();
@@ -25,6 +30,25 @@ export function MiPerfil({ rutaAcceso }: { rutaAcceso: string }) {
   const router = useRouter();
   const usuario = sesion.usuario;
   const admin = me.rol === "administrador";
+  const [editando, setEditando] = useState(false);
+  const [nombre, setNombre] = useState(usuario?.nombre ?? "");
+  const [aviso, setAviso] = useState<{
+    tipo: "ok" | "error";
+    texto: string;
+  } | null>(null);
+  const [ocupado, setOcupado] = useState(false);
+
+  const accion = async (fn: () => Promise<string>) => {
+    setOcupado(true);
+    setAviso(null);
+    try {
+      setAviso({ tipo: "ok", texto: await fn() });
+    } catch (e) {
+      setAviso({ tipo: "error", texto: mensajeError(e) });
+    } finally {
+      setOcupado(false);
+    }
+  };
 
   const cerrarSesion = async () => {
     await sesion.cerrarSesion();
@@ -41,13 +65,77 @@ export function MiPerfil({ rutaAcceso }: { rutaAcceso: string }) {
             : "Datos de tu cuenta y marcas vinculadas."
         }
       />
+      {aviso && (
+        <Alert
+          className="mb-4"
+          variant={aviso.tipo === "error" ? "destructive" : "default"}
+          role={aviso.tipo === "error" ? "alert" : "status"}
+        >
+          <AlertDescription>{aviso.texto}</AlertDescription>
+        </Alert>
+      )}
       <div className="grid gap-4 lg:grid-cols-2">
         <Tarjeta
           titulo="Información de la cuenta"
           icono={<UserRound aria-hidden="true" className="size-5" />}
         >
           <dl className="divide-y">
-            <Fila etiqueta="Nombre">{usuario?.nombre || "—"}</Fila>
+            {editando ? (
+              <form
+                noValidate
+                className="flex flex-col gap-3 py-3"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  void accion(async () => {
+                    await actualizarMiNombre(sesion.api(), nombre.trim());
+                    await sesion.recargarUsuario();
+                    setEditando(false);
+                    return "Nombre actualizado.";
+                  });
+                }}
+              >
+                <Campo
+                  id="mi-nombre"
+                  etiqueta="Nombre"
+                  value={nombre}
+                  maxLength={80}
+                  autoComplete="name"
+                  onChange={(e) => setNombre(e.target.value)}
+                />
+                <div className="flex gap-2">
+                  <Button
+                    type="submit"
+                    disabled={ocupado || nombre.trim().length < 2}
+                  >
+                    {ocupado ? "Guardando…" : "Guardar"}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => {
+                      setNombre(usuario?.nombre ?? "");
+                      setEditando(false);
+                    }}
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              </form>
+            ) : (
+              <Fila etiqueta="Nombre">
+                <span className="inline-flex items-center gap-2">
+                  {usuario?.nombre || "—"}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Editar nombre"
+                    onClick={() => setEditando(true)}
+                  >
+                    <Pencil aria-hidden="true" />
+                  </Button>
+                </span>
+              </Fila>
+            )}
             <Fila etiqueta="Correo electrónico">
               <span className="break-all">{usuario?.correo ?? "—"}</span>
             </Fila>
@@ -75,7 +163,9 @@ export function MiPerfil({ rutaAcceso }: { rutaAcceso: string }) {
             )}
           </dl>
           <p className="text-xs text-muted-foreground">
-            La edición de datos estará disponible en una próxima fase.
+            {admin
+              ? "El correo de acceso no se cambia desde aquí."
+              : "El correo sólo lo cambia un administrador; al cambiarlo se recalculan tus marcas vinculadas."}
           </p>
         </Tarjeta>
 
@@ -93,6 +183,29 @@ export function MiPerfil({ rutaAcceso }: { rutaAcceso: string }) {
               Se cierra el acceso en este dispositivo
             </Fila>
           </dl>
+          <div className="flex flex-col gap-2 rounded-xl bg-secondary p-4 text-sm">
+            <p className="font-semibold">Contraseña</p>
+            <p className="text-muted-foreground">
+              Te enviaremos un enlace a tu correo para elegir una nueva.
+            </p>
+            <Button
+              variant="outline"
+              className="h-10 w-fit"
+              disabled={ocupado || !usuario?.correo}
+              onClick={() =>
+                accion(async () => {
+                  await sesion.enviarCorreoContrasena(
+                    usuario!.correo!,
+                    rutaAcceso,
+                  );
+                  return `Enviamos el enlace a ${usuario!.correo}.`;
+                })
+              }
+            >
+              <KeyRound aria-hidden="true" />
+              Cambiar contraseña
+            </Button>
+          </div>
           <Button
             variant="destructive"
             className="h-10 w-fit"

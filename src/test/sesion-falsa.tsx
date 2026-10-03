@@ -27,6 +27,8 @@ export function crearSesionFalsa(
     const ruta = String(input).replace("http://be/api/v1", "");
     const r = respuestas[`${init?.method ?? "GET"} ${ruta}`];
     if (!r) throw new TypeError("fetch failed");
+    // 204 no admite cuerpo: `Response` lo rechazaría como fallo de red.
+    if (r.status === 204) return new Response(null, { status: 204 });
     return new Response(JSON.stringify(r.body), {
       status: r.status,
       headers: { "Content-Type": "application/json" },
@@ -52,6 +54,8 @@ export function crearSesionFalsa(
     crearCuenta: vi.fn(async () => {}),
     reenviarVerificacion: vi.fn(async () => {}),
     comprobarVerificacion: vi.fn(async () => true),
+    enviarCorreoContrasena: vi.fn(async () => {}),
+    recargarUsuario: vi.fn(async () => {}),
     cerrarSesion: vi.fn(async () => {}),
     ...parcial,
   };

@@ -4,6 +4,7 @@ import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
   sendEmailVerification,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
@@ -51,6 +52,14 @@ export interface Sesion {
   reenviarVerificacion(): Promise<void>;
   /** Recarga el usuario y fuerza un token nuevo; devuelve si el correo ya está verificado. */
   comprobarVerificacion(): Promise<boolean>;
+  /**
+   * Correo de Firebase para definir o cambiar la contraseña: invitación de un
+   * admin nuevo (DEC-03) o cambio de la propia (DEC-08). `volverA` es la ruta
+   * a la que el enlace devuelve tras guardarla.
+   */
+  enviarCorreoContrasena(correo: string, volverA: string): Promise<void>;
+  /** Vuelve a leer nombre y correo de Firebase tras un cambio hecho por Express. */
+  recargarUsuario(): Promise<void>;
   cerrarSesion(): Promise<void>;
 }
 
@@ -133,6 +142,16 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
         await user.getIdToken(true);
         setUsuario(aUsuario(user));
         return true;
+      },
+      async enviarCorreoContrasena(correo, volverA) {
+        await sendPasswordResetEmail(requerirAuth(), correo, {
+          url: new URL(volverA, window.location.origin).toString(),
+        });
+      },
+      async recargarUsuario() {
+        const user = usuarioActual();
+        await user.reload();
+        setUsuario(aUsuario(user));
       },
       async cerrarSesion() {
         if (auth) await signOut(auth);
