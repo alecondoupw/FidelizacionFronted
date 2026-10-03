@@ -98,7 +98,7 @@ export function CanjesAdmin() {
   return (
     <div className="flex flex-col gap-6">
       <EncabezadoPagina
-        titulo="Canjes"
+        titulo="Canjes en mostrador"
         descripcion="Busca un canje por su código para entregarlo o anularlo."
       />
       <Tarjeta>

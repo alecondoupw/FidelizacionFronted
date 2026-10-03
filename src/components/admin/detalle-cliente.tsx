@@ -269,7 +269,7 @@ function Contenido({
 
       <section
         aria-labelledby="titulo-eliminar"
-        className="flex flex-col gap-3 rounded-2xl border border-destructive/30 bg-card p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6 lg:col-span-2"
+        className="flex flex-col gap-3 rounded-2xl border border-destructive/30 bg-card p-5 sm:p-6 lg:col-span-2 lg:flex-row lg:items-center lg:justify-between"
       >
         <div>
           <h2 id="titulo-eliminar" className="font-bold">

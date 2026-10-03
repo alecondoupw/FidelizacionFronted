@@ -195,7 +195,7 @@ export function ReglasPuntos() {
                 {visibles.map((r) => (
                   <li
                     key={r.id}
-                    className="flex flex-col gap-3 py-3 sm:flex-row sm:items-center"
+                    className="flex flex-col gap-3 py-3 lg:flex-row lg:items-center"
                   >
                     <div className="min-w-0 flex-1">
                       <p className="font-semibold">{NOMBRE_EVENTO[r.evento]}</p>

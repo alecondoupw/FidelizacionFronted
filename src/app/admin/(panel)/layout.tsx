@@ -5,6 +5,7 @@ import {
   Download,
   Gift,
   Hourglass,
+  Megaphone,
   LayoutDashboard,
   List,
   PlusCircle,
@@ -36,12 +37,14 @@ const ITEMS: ItemNavegacion[] = [
   {
     href: "/admin/administradores",
     etiqueta: "Administradores",
+    corta: "Admins",
     icono: ShieldCheck,
     grupo: "Usuarios",
   },
   {
     href: "/admin/reglas",
     etiqueta: "Reglas de puntos",
+    corta: "Reglas",
     icono: SlidersHorizontal,
     grupo: "Fidelización",
   },
@@ -74,6 +77,12 @@ const ITEMS: ItemNavegacion[] = [
     etiqueta: "Canjes en mostrador",
     icono: Ticket,
     grupo: "Fidelización",
+  },
+  {
+    href: "/admin/contenido",
+    etiqueta: "Contenido por marca",
+    icono: Megaphone,
+    grupo: "Contenido",
   },
   {
     href: "/admin/actividad",

@@ -59,7 +59,7 @@ export function Tarjeta({
 }) {
   return (
     <section
-      className={`flex flex-col gap-4 rounded-2xl bg-card p-5 shadow-sm ring-1 ring-border sm:p-6 ${className}`}
+      className={`flex min-w-0 flex-col gap-4 rounded-2xl bg-card p-5 shadow-sm ring-1 ring-border sm:p-6 ${className}`}
     >
       {(titulo || accion) && (
         <div className="flex flex-wrap items-start justify-between gap-2">

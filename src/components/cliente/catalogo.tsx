@@ -143,7 +143,7 @@ export function Catalogo({ marcaInicial }: { marcaInicial?: string }) {
               ) : (
                 <ul
                   aria-label="Beneficios"
-                  className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
+                  className="grid gap-4 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3"
                 >
                   {items.map((b) => (
                     <li
@@ -175,7 +175,7 @@ export function Catalogo({ marcaInicial }: { marcaInicial?: string }) {
                         </span>
                         <Link
                           href={`/catalogo/${encodeURIComponent(b.id)}`}
-                          className="inline-flex items-center gap-1 rounded-lg bg-secondary px-3 py-1.5 text-sm font-medium text-secondary-foreground hover:bg-accent focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+                          className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-lg bg-secondary px-3 py-1.5 text-sm font-medium text-secondary-foreground hover:bg-accent focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
                         >
                           Ver detalle{" "}
                           <span className="sr-only">de {b.nombre}</span>

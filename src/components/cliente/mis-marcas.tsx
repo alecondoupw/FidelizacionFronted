@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleCheck, Gift, Plus, Star, Tags } from "lucide-react";
+import { CircleCheck, Gift, Megaphone, Plus, Star, Tags } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { usePerfil } from "@/components/acceso/guardia-rol";
@@ -66,7 +66,7 @@ export function MisMarcas() {
             </p>
           </div>
         ) : (
-          <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <ul className="grid gap-3 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
             {me.marcas.map((marca) => {
               const esActiva = marca === activa;
               return (
@@ -110,6 +110,17 @@ export function MisMarcas() {
                   >
                     <Gift aria-hidden="true" />
                     Ver beneficios
+                  </Link>
+                  <Link
+                    href={`/novedades?marca=${marca}`}
+                    className={buttonVariants({
+                      variant: "ghost",
+                      className: "h-9",
+                    })}
+                    aria-label={`Ver novedades de ${NOMBRE_MARCA[marca]}`}
+                  >
+                    <Megaphone aria-hidden="true" />
+                    Ver novedades
                   </Link>
                 </li>
               );

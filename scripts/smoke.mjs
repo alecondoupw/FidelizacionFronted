@@ -113,6 +113,16 @@ const checks = [
     marker: "Cargando tu cuenta",
     ausente: "Generar exportación",
   },
+  {
+    path: "/novedades?marca=zontes",
+    marker: "Cargando tu cuenta",
+    ausente: "No hay novedades",
+  },
+  {
+    path: "/admin/contenido",
+    marker: "Cargando tu cuenta",
+    ausente: "Nuevo contenido",
+  },
   { path: "/diagnostico", marker: "Conexión frontend → backend" },
 ];
 

@@ -1,10 +1,12 @@
 "use client";
 
-import { ArrowRight, History, Layers, Tags } from "lucide-react";
+import { ArrowRight, Gift, History, Megaphone, Ticket } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { usePerfil } from "@/components/acceso/guardia-rol";
 import { EstadoCarga, Tarjeta } from "@/components/comun/estado-carga";
+import { CarruselDestacadas } from "@/components/contenido/publicacion-visual";
+import { getContenidos } from "@/lib/api/contenidos";
 import { getMovimientos, getSaldo } from "@/lib/api/puntos";
 import { useSesion } from "@/lib/auth/sesion";
 import { formatoFechaLarga } from "@/lib/formato";
@@ -12,12 +14,19 @@ import { useCarga } from "@/lib/use-carga";
 import { ListaMovimientos } from "./lista-movimientos";
 import { ResumenSaldo } from "./resumen-saldo";
 
+/** Acciones rápidas de C08. */
 const ACCESOS = [
   {
-    href: "/puntos",
-    titulo: "Mis puntos",
-    texto: "Saldo por marca y vencimientos",
-    icono: Layers,
+    href: "/catalogo",
+    titulo: "Ver catálogo",
+    texto: "Productos, servicios y experiencias",
+    icono: Gift,
+  },
+  {
+    href: "/canjes",
+    titulo: "Mis canjes",
+    texto: "Tus canjes y sus estados",
+    icono: Ticket,
   },
   {
     href: "/historial",
@@ -26,14 +35,14 @@ const ACCESOS = [
     icono: History,
   },
   {
-    href: "/marcas",
-    titulo: "Mis marcas",
-    texto: "Marcas vinculadas y marca activa",
-    icono: Tags,
+    href: "/novedades",
+    titulo: "Novedades",
+    texto: "Noticias, eventos y promociones",
+    icono: Megaphone,
   },
 ];
 
-/** UI-13 Inicio cliente (C08, SRC-03 pp. 4–5). Catálogo y canjes llegan en F3. */
+/** UI-13 Inicio cliente (C08, SRC-03 pp. 4–5) con las novedades destacadas de sus marcas (F6). */
 export function Inicio() {
   const sesion = useSesion();
   const me = usePerfil();
@@ -42,6 +51,10 @@ export function Inicio() {
   const saldo = useCarga(() => getSaldo(api()), [me.uid]);
   const recientes = useCarga(
     () => getMovimientos(api(), { limite: 5 }),
+    [me.uid],
+  );
+  const destacadas = useCarga(
+    () => getContenidos(api(), { destacadas: true, limite: 5 }),
     [me.uid],
   );
   const nombre = sesion.usuario?.nombre?.split(" ")[0];
@@ -57,6 +70,11 @@ export function Inicio() {
         </p>
       </div>
 
+      {/* Contenido opcional: si falla o no hay destacadas, Inicio sigue igual. */}
+      {destacadas.carga.estado === "listo" && (
+        <CarruselDestacadas items={destacadas.carga.datos.items} />
+      )}
+
       <EstadoCarga
         carga={saldo.carga}
         recargar={saldo.recargar}
@@ -65,7 +83,10 @@ export function Inicio() {
         {(s) => <ResumenSaldo saldo={s} />}
       </EstadoCarga>
 
-      <nav aria-label="Accesos rápidos" className="grid gap-3 sm:grid-cols-3">
+      <nav
+        aria-label="Accesos rápidos"
+        className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
+      >
         {ACCESOS.map(({ href, titulo, texto, icono: Icono }) => (
           <Link
             key={href}

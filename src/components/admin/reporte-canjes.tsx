@@ -89,7 +89,7 @@ export function ReporteCanjesAdmin({
           titulo="Reporte de canjes"
           descripcion={`Total, detalle y trazabilidad de cada canje · ${textoRango(filtro.desde, filtro.hasta)}`}
         />
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button variant="outline" className="h-10" onClick={recargar}>
             <RefreshCw aria-hidden="true" /> Actualizar
           </Button>
@@ -148,7 +148,7 @@ export function ReporteCanjesAdmin({
               autoComplete="off"
             />
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button type="submit" className="h-10">
               <Search aria-hidden="true" /> Buscar
             </Button>
@@ -214,7 +214,10 @@ export function ReporteCanjesAdmin({
                   </p>
                 </Tarjeta>
                 <Tarjeta titulo="Beneficio más canjeado">
-                  <p className="truncate text-xl font-extrabold">
+                  <p
+                    className="truncate text-xl font-extrabold"
+                    title={r.beneficiosMasCanjeados[0]?.nombre}
+                  >
                     {r.beneficiosMasCanjeados[0]?.nombre ?? "—"}
                   </p>
                   <p className="text-xs text-muted-foreground">

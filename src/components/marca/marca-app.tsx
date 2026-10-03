@@ -15,7 +15,7 @@ export function MarcaApp({ className }: { className?: string }) {
         <Bike className="size-5" />
       </span>
       <span className="flex flex-col leading-tight">
-        <span className="text-sm font-extrabold tracking-tight">
+        <span className="text-sm font-extrabold tracking-tight whitespace-nowrap">
           MOTO LOYALTY
         </span>
         <span className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">

@@ -14,6 +14,8 @@ export interface ItemNavegacion {
   icono: LucideIcon;
   /** Encabezado de sección en la barra lateral (A13); se muestra al cambiar. */
   grupo?: string;
+  /** Texto de la barra inferior móvil cuando `etiqueta` no cabe. */
+  corta?: string;
 }
 
 /**
@@ -89,7 +91,7 @@ export function Shell({
         <header className="flex items-center justify-between gap-4 border-b bg-card px-4 py-3 md:px-8">
           <MarcaApp className="md:hidden" />
           <div className="ml-auto flex min-w-0 flex-col items-end text-right">
-            <span className="max-w-[16rem] truncate text-sm font-semibold">
+            <span className="max-w-[9rem] truncate text-sm font-semibold sm:max-w-[16rem]">
               {nombre}
             </span>
             <span className="text-xs text-muted-foreground">{rolEtiqueta}</span>
@@ -155,7 +157,7 @@ function BarraMovil({
           />
           <div
             id="menu-mas"
-            className="fixed inset-x-3 bottom-17 z-20 flex flex-col gap-1 rounded-2xl border bg-card p-2 shadow-lg"
+            className="fixed inset-x-3 bottom-17 z-20 flex max-h-[calc(100dvh-6rem)] flex-col gap-1 overflow-y-auto rounded-2xl border bg-card p-2 shadow-lg"
           >
             {resto.map(({ href, etiqueta, icono: Icono }) => (
               <Link
@@ -187,15 +189,16 @@ function BarraMovil({
         aria-label="Principal móvil"
         className="fixed inset-x-0 bottom-0 z-20 flex border-t bg-card"
       >
-        {visibles.map(({ href, etiqueta, icono: Icono }) => (
+        {visibles.map(({ href, etiqueta, corta, icono: Icono }) => (
           <Link
             key={href}
             href={href}
             aria-current={activo(href) ? "page" : undefined}
+            aria-label={corta ? etiqueta : undefined}
             className={cn(CLASE_BOTON_MOVIL, activo(href) && "text-primary")}
           >
             <Icono aria-hidden="true" className="size-5" />
-            {etiqueta}
+            {corta ?? etiqueta}
           </Link>
         ))}
         {resto.length > 0 ? (

@@ -122,7 +122,7 @@ export function VencimientoPuntos() {
                 {items.map((c, i) => (
                   <li
                     key={`${c.marca}-${c.en}-${i}`}
-                    className="grid gap-1 py-3 text-sm sm:grid-cols-[10rem_6rem_1fr_1fr_10rem] sm:items-center sm:gap-3"
+                    className="grid gap-1 py-3 text-sm xl:grid-cols-[10rem_6rem_1fr_1fr_10rem] xl:items-center xl:gap-3"
                   >
                     <span className="text-muted-foreground">
                       {formatoFechaHora(c.en)}

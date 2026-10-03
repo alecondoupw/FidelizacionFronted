@@ -42,7 +42,7 @@ const CLASES: { texto: string; valor: Clase }[] = [
     texto: NOMBRE_EVENTO[e],
     valor: { tipo: "otorgamiento" as const, evento: e },
   })),
-  { texto: "Otorgamientos", valor: { tipo: "otorgamiento" } },
+  { texto: "Acumulaciones", valor: { tipo: "otorgamiento" } },
   { texto: "Canje", valor: { tipo: "canje" } },
   { texto: "Vencimiento", valor: { tipo: "vencimiento" } },
   { texto: "Ajuste", valor: { tipo: "ajuste" } },
@@ -120,7 +120,7 @@ export function MovimientosAdmin({
           titulo="Movimientos de puntos"
           descripcion={`Puntos de reglas, canjes, vencimientos y ajustes · ${textoRango(filtro.desde, filtro.hasta)}`}
         />
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button variant="outline" className="h-10" onClick={primera.recargar}>
             <RefreshCw aria-hidden="true" /> Actualizar
           </Button>

@@ -59,7 +59,7 @@ export function ActividadAdmin() {
           titulo="Reporte de actividad"
           descripcion={textoRango(filtro.desde, filtro.hasta)}
         />
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button variant="outline" className="h-10" onClick={recargar}>
             <RefreshCw aria-hidden="true" /> Actualizar
           </Button>

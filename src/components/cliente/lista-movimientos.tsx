@@ -36,7 +36,7 @@ export function ListaMovimientos({ items }: { items: MovimientoVista[] }) {
   }
   return (
     <>
-      <table className="hidden w-full text-sm md:table">
+      <table className="hidden w-full text-sm lg:table">
         <caption className="sr-only">Movimientos de puntos</caption>
         <thead>
           <tr className="border-b text-left text-xs text-muted-foreground uppercase">
@@ -96,7 +96,7 @@ export function ListaMovimientos({ items }: { items: MovimientoVista[] }) {
 
       <ul
         aria-label="Movimientos de puntos"
-        className="flex flex-col gap-2 md:hidden"
+        className="flex flex-col gap-2 lg:hidden"
       >
         {items.map((m) => {
           const Icono = ICONO[m.tipo];

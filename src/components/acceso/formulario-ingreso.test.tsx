@@ -156,7 +156,7 @@ describe("F1-FE-01 · ingreso de cliente (UI-02)", () => {
 });
 
 describe("F1-FE-01 · ingreso de administrador (UI-01)", () => {
-  it("administrador válido → entra a Reglas de puntos", async () => {
+  it("administrador válido → entra al Dashboard", async () => {
     const { sesion } = crearSesionFalsa(
       {},
       { "GET /me": respuesta(200, ME_ADMIN) },

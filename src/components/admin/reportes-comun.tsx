@@ -2,7 +2,8 @@
 
 import { ArrowDownRight, ArrowUpRight, type LucideIcon } from "lucide-react";
 import Link from "next/link";
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
+import { Chip } from "@/components/comun/chip";
 import {
   Bar,
   BarChart,
@@ -32,31 +33,7 @@ export const COLOR_MARCA: Record<Marca, string> = {
   niu: "var(--chart-3)",
 };
 
-export function Chip({
-  activo,
-  onClick,
-  children,
-}: {
-  activo: boolean;
-  onClick: () => void;
-  children: ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      aria-pressed={activo}
-      onClick={onClick}
-      className={cn(
-        "shrink-0 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
-        activo
-          ? "border-primary bg-primary text-primary-foreground"
-          : "bg-card hover:bg-muted",
-      )}
-    >
-      {children}
-    </button>
-  );
-}
+export { Chip } from "@/components/comun/chip";
 
 export interface FiltroPeriodo {
   preset: Preset;
@@ -223,7 +200,7 @@ export function TarjetaKpi({
     </>
   );
   const clase =
-    "flex flex-col gap-2 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-border";
+    "flex min-w-0 flex-col gap-2 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-border";
   return href ? (
     <Link
       href={href}
@@ -248,7 +225,8 @@ interface Serie {
 
 /**
  * Tabla accesible con los mismos datos del gráfico: los lectores de pantalla
- * no leen el SVG y así cada cifra queda verificable.
+ * no leen el SVG y así cada cifra queda verificable. El `sr-only` va en un
+ * contenedor: una tabla ignora `width: 1px` y desbordaría la página.
  */
 function TablaDatos({
   titulo,
@@ -260,29 +238,31 @@ function TablaDatos({
   series: Serie[];
 }) {
   return (
-    <table className="sr-only">
-      <caption>{titulo}</caption>
-      <thead>
-        <tr>
-          <th scope="col">Periodo</th>
-          {series.map((s) => (
-            <th key={s.clave} scope="col">
-              {s.nombre}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {datos.map((d) => (
-          <tr key={String(d.etiqueta)}>
-            <th scope="row">{d.etiqueta}</th>
+    <div className="sr-only">
+      <table>
+        <caption>{titulo}</caption>
+        <thead>
+          <tr>
+            <th scope="col">Periodo</th>
             {series.map((s) => (
-              <td key={s.clave}>{d[s.clave]}</td>
+              <th key={s.clave} scope="col">
+                {s.nombre}
+              </th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {datos.map((d) => (
+            <tr key={String(d.etiqueta)}>
+              <th scope="row">{d.etiqueta}</th>
+              {series.map((s) => (
+                <td key={s.clave}>{d[s.clave]}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 

@@ -42,7 +42,7 @@ export function Dashboard() {
           titulo="Dashboard"
           descripcion="Resumen del programa de fidelización · Zontes, Kiden y NIU."
         />
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button variant="outline" className="h-10" onClick={recargar}>
             <RefreshCw aria-hidden="true" /> Actualizar
           </Button>
