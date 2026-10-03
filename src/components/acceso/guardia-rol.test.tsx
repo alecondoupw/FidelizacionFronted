@@ -63,7 +63,7 @@ describe("F1-FE-01/03 · GuardiaRol", () => {
       await screen.findByText("Esta sección no está disponible para tu cuenta"),
     ).toBeTruthy();
     expect(screen.getByRole("link").getAttribute("href")).toBe(
-      "/admin/clientes",
+      "/admin/dashboard",
     );
     expect(screen.queryByText(/Contenido protegido/)).toBeNull();
   });

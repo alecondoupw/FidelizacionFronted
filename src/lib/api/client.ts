@@ -53,7 +53,11 @@ export interface RequestOptions<T> {
 export interface ApiClient {
   readonly baseUrl: string;
   request<T>(path: string, options: RequestOptions<T>): Promise<T>;
-  descargar(path: string, accept: string): Promise<Blob>;
+  descargar(
+    path: string,
+    accept: string,
+    opciones?: { timeoutMs?: number },
+  ): Promise<Blob>;
 }
 
 const DEFAULT_TIMEOUT_MS = 10_000;
@@ -72,6 +76,7 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
       headers?: Record<string, string>;
       signal?: AbortSignal;
       accept: string;
+      timeoutMs?: number;
     },
   ): Promise<Response> {
     const url = `${baseUrl}${API_PREFIX}${path}`;
@@ -84,7 +89,7 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
     const token = options.getIdToken ? await options.getIdToken() : null;
     if (token) headers.Authorization = `Bearer ${token}`;
 
-    const timeoutSignal = AbortSignal.timeout(timeoutMs);
+    const timeoutSignal = AbortSignal.timeout(init.timeoutMs ?? timeoutMs);
     const signal = init.signal
       ? AbortSignal.any([init.signal, timeoutSignal])
       : timeoutSignal;
@@ -146,9 +151,13 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
     return parsed.data;
   }
 
-  /** Descarga binaria autenticada (comprobante PDF, QR). */
-  async function descargar(path: string, accept: string): Promise<Blob> {
-    const response = await enviar(path, { accept });
+  /** Descarga binaria autenticada (comprobante PDF, QR, exportaciones). */
+  async function descargar(
+    path: string,
+    accept: string,
+    opciones: { timeoutMs?: number } = {},
+  ): Promise<Blob> {
+    const response = await enviar(path, { accept, ...opciones });
     return response.blob();
   }
 

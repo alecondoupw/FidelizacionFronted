@@ -83,6 +83,36 @@ const checks = [
     ausente: "Nuevo administrador",
   },
   { path: "/verificar-correo", marker: "Verifica tu nuevo correo" },
+  {
+    path: "/admin/dashboard",
+    marker: "Cargando tu cuenta",
+    ausente: "Clientes registrados",
+  },
+  {
+    path: "/admin/actividad",
+    marker: "Cargando tu cuenta",
+    ausente: "Usuarios con actividad",
+  },
+  {
+    path: "/admin/tendencias",
+    marker: "Cargando tu cuenta",
+    ausente: "Periodo anterior",
+  },
+  {
+    path: "/admin/movimientos?desde=2026-09-01&hasta=2026-09-30&tipo=canje",
+    marker: "Cargando tu cuenta",
+    ausente: "Cargar más",
+  },
+  {
+    path: "/admin/reporte-canjes",
+    marker: "Cargando tu cuenta",
+    ausente: "Total de canjes",
+  },
+  {
+    path: "/admin/exportar?tipo=movimientos",
+    marker: "Cargando tu cuenta",
+    ausente: "Generar exportación",
+  },
   { path: "/diagnostico", marker: "Conexión frontend → backend" },
 ];
 

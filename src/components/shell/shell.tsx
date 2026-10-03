@@ -3,7 +3,7 @@
 import { LogOut, Menu, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { Fragment, useEffect, useState, type ReactNode } from "react";
 import { MarcaApp } from "@/components/marca/marca-app";
 import { useSesion } from "@/lib/auth/sesion";
 import { cn } from "@/lib/utils";
@@ -12,6 +12,8 @@ export interface ItemNavegacion {
   href: string;
   etiqueta: string;
   icono: LucideIcon;
+  /** Encabezado de sección en la barra lateral (A13); se muestra al cambiar. */
+  grupo?: string;
 }
 
 /**
@@ -47,21 +49,30 @@ export function Shell({
     <div className="flex min-h-full flex-1">
       <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col gap-6 border-r bg-sidebar p-5 md:flex">
         <MarcaApp />
-        <nav aria-label="Principal" className="flex flex-1 flex-col gap-1">
-          {items.map(({ href, etiqueta, icono: Icono }) => (
-            <Link
-              key={href}
-              href={href}
-              aria-current={activo(href) ? "page" : undefined}
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
-                activo(href) &&
-                  "bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+        <nav
+          aria-label="Principal"
+          className="-mx-1 flex flex-1 flex-col gap-1 overflow-y-auto px-1"
+        >
+          {items.map(({ href, etiqueta, icono: Icono, grupo }, i) => (
+            <Fragment key={href}>
+              {grupo && grupo !== items[i - 1]?.grupo && (
+                <p className="px-3 pt-3 pb-1 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase first:pt-0">
+                  {grupo}
+                </p>
               )}
-            >
-              <Icono aria-hidden="true" className="size-4.5" />
-              {etiqueta}
-            </Link>
+              <Link
+                href={href}
+                aria-current={activo(href) ? "page" : undefined}
+                className={cn(
+                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
+                  activo(href) &&
+                    "bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                )}
+              >
+                <Icono aria-hidden="true" className="size-4.5" />
+                {etiqueta}
+              </Link>
+            </Fragment>
           ))}
         </nav>
         <button

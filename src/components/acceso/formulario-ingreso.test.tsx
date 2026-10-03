@@ -164,7 +164,7 @@ describe("F1-FE-01 · ingreso de administrador (UI-01)", () => {
     renderConSesion(<FormularioIngreso rol="administrador" />, sesion);
     await ingresar("admin@ejemplo.test");
     await waitFor(() =>
-      expect(replace).toHaveBeenCalledWith("/admin/clientes"),
+      expect(replace).toHaveBeenCalledWith("/admin/dashboard"),
     );
   });
 
