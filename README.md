@@ -2,7 +2,7 @@
 
 Frontend **Next.js + TypeScript** de la plataforma de fidelización multimarca Zontes / Kiden / NIU (vista cliente y vista administrador). La documentación canónica, decisiones y evidencias viven en el Core de Obsidian del repositorio [FidelizacionDoc](https://github.com/alecondoupw/FidelizacionDoc) (`Zontes-Core/`). Este repositorio contiene sólo código.
 
-**Estado:** F0 — base técnica instalada y verificada. No contiene vistas de producto todavía; `/` y `/diagnostico` son páginas técnicas.
+**Estado:** F1 — identidad implementada y probada con dobles: `/ingresar` y `/registro` (cliente), `/admin/ingresar`, `/marcas`, `/perfil` y `/admin/perfil`. Sin las variables `NEXT_PUBLIC_FIREBASE_*` las pantallas de acceso avisan que la autenticación no está configurada. `/diagnostico` sigue siendo técnica.
 
 ## Requisitos
 

@@ -27,3 +27,25 @@ export const healthResponseSchema = z.object({
 });
 
 export type HealthResponse = z.infer<typeof healthResponseSchema>;
+
+/** I-01/I-02 v1, aprobados por Paulo el 2026-10-03. */
+export const rolSchema = z.enum(["cliente", "administrador"]);
+export const marcaSchema = z.enum(["zontes", "kiden", "niu"]);
+export const vinculoSchema = z.enum(["vinculado", "no_vinculado"]);
+
+export const meResponseSchema = z.object({
+  uid: z.string().min(1),
+  rol: rolSchema,
+  activo: z.boolean(),
+  marcas: z.array(marcaSchema),
+  vinculo: vinculoSchema,
+});
+
+export const registroResponseSchema = z.object({
+  vinculo: vinculoSchema,
+  marcas: z.array(marcaSchema),
+});
+
+export type Marca = z.infer<typeof marcaSchema>;
+export type MeResponse = z.infer<typeof meResponseSchema>;
+export type RegistroResponse = z.infer<typeof registroResponseSchema>;
