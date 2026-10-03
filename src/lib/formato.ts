@@ -1,3 +1,4 @@
+import type { Categoria, Disponibilidad, EstadoCanje } from "@/lib/api/canjes";
 import type { Evento, TipoMovimiento, Unidad } from "@/lib/api/puntos";
 
 /** Zona oficial (DEC-06): el BE calcula; el FE sólo presenta en hora de Bolivia. */
@@ -81,3 +82,27 @@ export function descripcionMovimiento(m: {
   if (m.tipo === "otorgamiento" && m.evento) return NOMBRE_EVENTO[m.evento];
   return m.motivo ?? NOMBRE_TIPO[m.tipo];
 }
+
+export const NOMBRE_CATEGORIA: Record<Categoria, string> = {
+  accesorios: "Accesorios",
+  ropa: "Ropa",
+  servicios: "Servicios",
+  experiencias: "Experiencias",
+  descuentos: "Descuentos",
+};
+
+/** Estados de disponibilidad de SRC-03 p. 6; siempre los decide el backend. */
+export const NOMBRE_DISPONIBILIDAD: Record<Disponibilidad, string> = {
+  disponible: "Disponible",
+  ultimas: "Últimas unidades",
+  agotado: "Agotado",
+  proximamente: "Próximamente",
+};
+
+/** Ciclo del canje de DEC-07. */
+export const NOMBRE_ESTADO_CANJE: Record<EstadoCanje, string> = {
+  emitido: "Emitido",
+  entregado: "Entregado",
+  vencido: "Vencido",
+  anulado: "Anulado",
+};

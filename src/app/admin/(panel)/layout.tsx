@@ -1,15 +1,17 @@
 "use client";
 
 import {
+  Gift,
   Hourglass,
   PlusCircle,
   SlidersHorizontal,
+  Ticket,
   UserRound,
 } from "lucide-react";
 import { GuardiaRol } from "@/components/acceso/guardia-rol";
 import { Shell, type ItemNavegacion } from "@/components/shell/shell";
 
-/** Secciones construidas del panel; crecen con F2 y F4–F6 (SRC-02 p. 8). */
+/** Secciones construidas del panel; crecen con F4–F6 (SRC-02 p. 8). */
 const ITEMS: ItemNavegacion[] = [
   {
     href: "/admin/reglas",
@@ -18,6 +20,8 @@ const ITEMS: ItemNavegacion[] = [
   },
   { href: "/admin/vencimiento", etiqueta: "Vencimiento", icono: Hourglass },
   { href: "/admin/registrar", etiqueta: "Registrar puntos", icono: PlusCircle },
+  { href: "/admin/beneficios", etiqueta: "Beneficios", icono: Gift },
+  { href: "/admin/canjes", etiqueta: "Canjes", icono: Ticket },
   { href: "/admin/perfil", etiqueta: "Mi perfil", icono: UserRound },
 ];
 

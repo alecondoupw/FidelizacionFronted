@@ -53,6 +53,7 @@ export interface RequestOptions<T> {
 export interface ApiClient {
   readonly baseUrl: string;
   request<T>(path: string, options: RequestOptions<T>): Promise<T>;
+  descargar(path: string, accept: string): Promise<Blob>;
 }
 
 const DEFAULT_TIMEOUT_MS = 10_000;
@@ -62,28 +63,38 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
   const fetchImpl = options.fetchImpl ?? globalThis.fetch.bind(globalThis);
   const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
 
-  async function request<T>(path: string, req: RequestOptions<T>): Promise<T> {
+  /** Envía con token y tiempo de espera; traduce fallos de red y errores del contrato. */
+  async function enviar(
+    path: string,
+    init: {
+      method?: string;
+      body?: unknown;
+      headers?: Record<string, string>;
+      signal?: AbortSignal;
+      accept: string;
+    },
+  ): Promise<Response> {
     const url = `${baseUrl}${API_PREFIX}${path}`;
     const headers: Record<string, string> = {
-      Accept: "application/json",
-      ...req.headers,
+      Accept: init.accept,
+      ...init.headers,
     };
-    if (req.body !== undefined) headers["Content-Type"] = "application/json";
+    if (init.body !== undefined) headers["Content-Type"] = "application/json";
 
     const token = options.getIdToken ? await options.getIdToken() : null;
     if (token) headers.Authorization = `Bearer ${token}`;
 
     const timeoutSignal = AbortSignal.timeout(timeoutMs);
-    const signal = req.signal
-      ? AbortSignal.any([req.signal, timeoutSignal])
+    const signal = init.signal
+      ? AbortSignal.any([init.signal, timeoutSignal])
       : timeoutSignal;
 
     let response: Response;
     try {
       response = await fetchImpl(url, {
-        method: req.method ?? "GET",
+        method: init.method ?? "GET",
         headers,
-        body: req.body === undefined ? undefined : JSON.stringify(req.body),
+        body: init.body === undefined ? undefined : JSON.stringify(init.body),
         signal,
         credentials: "omit",
       });
@@ -99,9 +110,8 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
       });
     }
 
-    const payload: unknown = await response.json().catch(() => undefined);
-
     if (!response.ok) {
+      const payload: unknown = await response.json().catch(() => undefined);
       const parsed = errorEnvelopeSchema.safeParse(payload);
       if (parsed.success) {
         throw new ApiError({
@@ -118,7 +128,12 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
         message: `Respuesta de error sin formato de contrato (HTTP ${response.status}).`,
       });
     }
+    return response;
+  }
 
+  async function request<T>(path: string, req: RequestOptions<T>): Promise<T> {
+    const response = await enviar(path, { ...req, accept: "application/json" });
+    const payload: unknown = await response.json().catch(() => undefined);
     const parsed = req.schema.safeParse(payload);
     if (!parsed.success) {
       throw new ApiError({
@@ -131,5 +146,11 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
     return parsed.data;
   }
 
-  return { baseUrl, request };
+  /** Descarga binaria autenticada (comprobante PDF, QR). */
+  async function descargar(path: string, accept: string): Promise<Blob> {
+    const response = await enviar(path, { accept });
+    return response.blob();
+  }
+
+  return { baseUrl, request, descargar };
 }

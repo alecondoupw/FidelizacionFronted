@@ -37,6 +37,36 @@ const checks = [
     marker: "Cargando tu cuenta",
     ausente: "Aplicar ajuste",
   },
+  {
+    path: "/catalogo?marca=zontes",
+    marker: "Cargando tu cuenta",
+    ausente: "Catálogo de beneficios",
+  },
+  {
+    path: "/catalogo/beneficio-x",
+    marker: "Cargando tu cuenta",
+    ausente: "Confirmar canje",
+  },
+  {
+    path: "/canjes",
+    marker: "Cargando tu cuenta",
+    ausente: "Los beneficios que canjeaste",
+  },
+  {
+    path: "/canjes/ML-AAAA-BBBB-CC",
+    marker: "Cargando tu cuenta",
+    ausente: "Descargar comprobante",
+  },
+  {
+    path: "/admin/beneficios",
+    marker: "Cargando tu cuenta",
+    ausente: "Nuevo beneficio",
+  },
+  {
+    path: "/admin/canjes",
+    marker: "Cargando tu cuenta",
+    ausente: "Código de canje",
+  },
   { path: "/diagnostico", marker: "Conexión frontend → backend" },
 ];
 

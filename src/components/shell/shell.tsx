@@ -1,9 +1,9 @@
 "use client";
 
-import { LogOut, type LucideIcon } from "lucide-react";
+import { LogOut, Menu, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { MarcaApp } from "@/components/marca/marca-app";
 import { useSesion } from "@/lib/auth/sesion";
 import { cn } from "@/lib/utils";
@@ -89,32 +89,128 @@ export function Shell({
         </div>
       </div>
 
+      <BarraMovil items={items} activo={activo} cerrarSesion={cerrarSesion} />
+    </div>
+  );
+}
+
+const VISIBLES_MOVIL = 4;
+const CLASE_BOTON_MOVIL =
+  "flex min-h-14 flex-1 flex-col items-center justify-center gap-1 text-xs font-medium text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none";
+
+/**
+ * Barra inferior móvil: las primeras secciones y un menú "Más" con el resto
+ * y el cierre de sesión, para que cada destino conserve un área táctil útil.
+ */
+function BarraMovil({
+  items,
+  activo,
+  cerrarSesion,
+}: {
+  items: ItemNavegacion[];
+  activo: (href: string) => boolean;
+  cerrarSesion: () => void;
+}) {
+  const [abierto, setAbierto] = useState(false);
+  const pathname = usePathname();
+  const visibles =
+    items.length > VISIBLES_MOVIL + 1 ? items.slice(0, VISIBLES_MOVIL) : items;
+  const resto = items.slice(visibles.length);
+  const restoActivo = resto.some((i) => activo(i.href));
+
+  // Al navegar, el menú se cierra.
+  const [rutaPrevia, setRutaPrevia] = useState(pathname);
+  if (rutaPrevia !== pathname) {
+    setRutaPrevia(pathname);
+    setAbierto(false);
+  }
+
+  useEffect(() => {
+    if (!abierto) return;
+    const alTeclear = (e: KeyboardEvent) =>
+      e.key === "Escape" && setAbierto(false);
+    document.addEventListener("keydown", alTeclear);
+    return () => document.removeEventListener("keydown", alTeclear);
+  }, [abierto]);
+
+  return (
+    <div className="md:hidden">
+      {abierto && (
+        <>
+          <div
+            aria-hidden="true"
+            className="fixed inset-0 z-10 bg-black/20"
+            onClick={() => setAbierto(false)}
+          />
+          <div
+            id="menu-mas"
+            className="fixed inset-x-3 bottom-17 z-20 flex flex-col gap-1 rounded-2xl border bg-card p-2 shadow-lg"
+          >
+            {resto.map(({ href, etiqueta, icono: Icono }) => (
+              <Link
+                key={href}
+                href={href}
+                aria-current={activo(href) ? "page" : undefined}
+                className={cn(
+                  "flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-muted-foreground hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
+                  activo(href) &&
+                    "bg-sidebar-accent text-sidebar-accent-foreground",
+                )}
+              >
+                <Icono aria-hidden="true" className="size-5" />
+                {etiqueta}
+              </Link>
+            ))}
+            <button
+              type="button"
+              onClick={cerrarSesion}
+              className="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-muted-foreground hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+            >
+              <LogOut aria-hidden="true" className="size-5" />
+              Cerrar sesión
+            </button>
+          </div>
+        </>
+      )}
       <nav
         aria-label="Principal móvil"
-        className="fixed inset-x-0 bottom-0 z-10 flex border-t bg-card md:hidden"
+        className="fixed inset-x-0 bottom-0 z-20 flex border-t bg-card"
       >
-        {items.map(({ href, etiqueta, icono: Icono }) => (
+        {visibles.map(({ href, etiqueta, icono: Icono }) => (
           <Link
             key={href}
             href={href}
             aria-current={activo(href) ? "page" : undefined}
-            className={cn(
-              "flex min-h-14 flex-1 flex-col items-center justify-center gap-1 text-xs font-medium text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
-              activo(href) && "text-primary",
-            )}
+            className={cn(CLASE_BOTON_MOVIL, activo(href) && "text-primary")}
           >
             <Icono aria-hidden="true" className="size-5" />
             {etiqueta}
           </Link>
         ))}
-        <button
-          type="button"
-          onClick={cerrarSesion}
-          className="flex min-h-14 flex-1 flex-col items-center justify-center gap-1 text-xs font-medium text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
-        >
-          <LogOut aria-hidden="true" className="size-5" />
-          Salir
-        </button>
+        {resto.length > 0 ? (
+          <button
+            type="button"
+            aria-expanded={abierto}
+            aria-controls="menu-mas"
+            onClick={() => setAbierto((a) => !a)}
+            className={cn(
+              CLASE_BOTON_MOVIL,
+              (abierto || restoActivo) && "text-primary",
+            )}
+          >
+            <Menu aria-hidden="true" className="size-5" />
+            Más
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={cerrarSesion}
+            className={CLASE_BOTON_MOVIL}
+          >
+            <LogOut aria-hidden="true" className="size-5" />
+            Salir
+          </button>
+        )}
       </nav>
     </div>
   );

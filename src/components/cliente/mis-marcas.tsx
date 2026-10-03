@@ -1,11 +1,12 @@
 "use client";
 
-import { CircleCheck, Plus, Star, Tags } from "lucide-react";
+import { CircleCheck, Gift, Plus, Star, Tags } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { usePerfil } from "@/components/acceso/guardia-rol";
 import { EncabezadoPagina } from "@/components/shell/shell";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import type { Marca } from "@/lib/api/contract";
 import {
   guardarMarcaActiva,
@@ -16,7 +17,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * UI-17 Mis marcas (C02, SRC-03 pp. 4–5, 8). Sólo muestra las marcas que
- * confirma /me. Saldos (F2) y beneficios (F3) se integran en sus fases.
+ * confirma /me; cada marca enlaza a su catálogo de beneficios (F3).
  */
 export function MisMarcas() {
   const me = usePerfil();
@@ -99,6 +100,17 @@ export function MisMarcas() {
                       Usar como marca activa
                     </Button>
                   )}
+                  <Link
+                    href={`/catalogo?marca=${marca}`}
+                    className={buttonVariants({
+                      variant: "outline",
+                      className: "h-9",
+                    })}
+                  >
+                    <Gift aria-hidden="true" />
+                    Ver beneficios
+                    <span className="sr-only"> de {NOMBRE_MARCA[marca]}</span>
+                  </Link>
                 </li>
               );
             })}
