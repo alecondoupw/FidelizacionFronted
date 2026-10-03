@@ -19,6 +19,21 @@ const FIREBASE: Record<string, string> = {
   "auth/weak-password": "La contraseña es demasiado débil.",
 };
 
+/**
+ * Errores de configuración del proyecto Firebase (clave web inválida o
+ * restringida, proveedor desactivado, dominio no autorizado). No dependen del
+ * usuario: se indican como tales y con su código para el equipo técnico.
+ */
+const CONFIGURACION = [
+  "auth/api-key-not-valid",
+  "auth/invalid-api-key",
+  "auth/operation-not-allowed",
+  "auth/configuration-not-found",
+  "auth/unauthorized-domain",
+  "auth/app-not-authorized",
+  "auth/requests-from-referer",
+];
+
 export function mensajeError(error: unknown): string {
   if (error instanceof ApiError) {
     switch (error.code) {
@@ -32,8 +47,14 @@ export function mensajeError(error: unknown): string {
     }
   }
   const code = (error as { code?: unknown } | null)?.code;
-  if (typeof code === "string" && FIREBASE[code]) return FIREBASE[code];
-  return "Ocurrió un error inesperado. Inténtalo de nuevo.";
+  if (typeof code !== "string") {
+    return "Ocurrió un error inesperado. Inténtalo de nuevo.";
+  }
+  if (FIREBASE[code]) return FIREBASE[code];
+  if (CONFIGURACION.some((prefijo) => code.startsWith(prefijo))) {
+    return `El acceso no está bien configurado en este entorno. Avisa al equipo técnico (código ${code}).`;
+  }
+  return `Ocurrió un error inesperado. Inténtalo de nuevo (código ${code}).`;
 }
 
 /** Avisos que una ruta protegida deja al devolver al usuario al acceso. */
