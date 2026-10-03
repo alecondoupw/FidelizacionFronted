@@ -14,12 +14,15 @@ export class ApiError extends Error {
   readonly status: number;
   readonly code: ApiErrorCode;
   readonly requestId?: string;
+  /** Detalle por campo de un 422 (`[{ campo, mensaje }]`). */
+  readonly details?: unknown;
 
   constructor(params: {
     status: number;
     code: ApiErrorCode;
     message: string;
     requestId?: string;
+    details?: unknown;
     cause?: unknown;
   }) {
     super(params.message, { cause: params.cause });
@@ -27,6 +30,7 @@ export class ApiError extends Error {
     this.status = params.status;
     this.code = params.code;
     this.requestId = params.requestId;
+    this.details = params.details;
   }
 }
 
@@ -105,6 +109,7 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
           code: parsed.data.error.code,
           message: parsed.data.error.message,
           requestId: parsed.data.error.requestId,
+          details: parsed.data.error.details,
         });
       }
       throw new ApiError({

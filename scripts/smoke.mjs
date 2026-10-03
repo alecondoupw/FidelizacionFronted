@@ -21,6 +21,22 @@ const checks = [
     marker: "Cargando tu cuenta",
     ausente: "Cerrar sesión",
   },
+  {
+    path: "/inicio",
+    marker: "Cargando tu cuenta",
+    ausente: "Mis puntos totales",
+  },
+  { path: "/historial", marker: "Cargando tu cuenta", ausente: "Cargar más" },
+  {
+    path: "/admin/reglas",
+    marker: "Cargando tu cuenta",
+    ausente: "Nueva regla",
+  },
+  {
+    path: "/admin/registrar",
+    marker: "Cargando tu cuenta",
+    ausente: "Aplicar ajuste",
+  },
   { path: "/diagnostico", marker: "Conexión frontend → backend" },
 ];
 

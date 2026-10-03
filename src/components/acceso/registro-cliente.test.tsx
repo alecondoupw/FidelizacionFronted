@@ -139,7 +139,7 @@ describe("F1-FE-01 · registro por pasos (UI-02, C10/C09)", () => {
     );
   });
 
-  it("ya registrado → continúa a Mis marcas", async () => {
+  it("ya registrado → continúa al inicio", async () => {
     const { sesion } = crearSesionFalsa(
       {},
       {
@@ -150,6 +150,6 @@ describe("F1-FE-01 · registro por pasos (UI-02, C10/C09)", () => {
     await userEvent
       .setup()
       .click(screen.getByRole("button", { name: "Ya verifiqué mi correo" }));
-    await waitFor(() => expect(replace).toHaveBeenCalledWith("/marcas"));
+    await waitFor(() => expect(replace).toHaveBeenCalledWith("/inicio"));
   });
 });

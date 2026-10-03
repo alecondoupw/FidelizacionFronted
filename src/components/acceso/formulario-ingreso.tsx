@@ -73,7 +73,7 @@ export function FormularioIngreso({
         );
         return;
       }
-      router.replace(rol === "administrador" ? "/admin/perfil" : "/marcas");
+      router.replace(rol === "administrador" ? "/admin/reglas" : "/inicio");
     } catch (e) {
       if (e instanceof ApiError && e.code === "REGISTRATION_REQUIRED") {
         if (rol === "cliente") {

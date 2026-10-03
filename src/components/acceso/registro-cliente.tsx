@@ -96,7 +96,7 @@ export function RegistroCliente() {
       setResultado(await registrarCliente(sesion.api()));
     } catch (e) {
       if (e instanceof ApiError && e.code === "ALREADY_REGISTERED") {
-        router.replace("/marcas");
+        router.replace("/inicio");
         return;
       }
       setError(mensajeError(e));
@@ -340,10 +340,10 @@ function ResultadoVinculo({ resultado }: { resultado: RegistroResponse }) {
         </ul>
       )}
       <Link
-        href="/marcas"
+        href="/inicio"
         className={cn(buttonVariants({ size: "lg" }), "h-11")}
       >
-        Ir a Mis marcas
+        Ir al inicio
       </Link>
     </div>
   );

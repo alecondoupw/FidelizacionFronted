@@ -37,9 +37,9 @@ export function usePerfil(): MeResponse {
 }
 
 const INICIO_POR_ROL: Record<Rol, { ruta: string; nombre: string }> = {
-  cliente: { ruta: "/marcas", nombre: "tu cuenta de cliente" },
+  cliente: { ruta: "/inicio", nombre: "tu cuenta de cliente" },
   administrador: {
-    ruta: "/admin/perfil",
+    ruta: "/admin/reglas",
     nombre: "el panel de administración",
   },
 };

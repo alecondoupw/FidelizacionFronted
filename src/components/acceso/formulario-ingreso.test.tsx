@@ -29,14 +29,14 @@ async function ingresar(
 }
 
 describe("F1-FE-01 · ingreso de cliente (UI-02)", () => {
-  it("cliente válido → entra a Mis marcas", async () => {
+  it("cliente válido → entra a Inicio", async () => {
     const { sesion } = crearSesionFalsa(
       {},
       { "GET /me": respuesta(200, ME_CLIENTE) },
     );
     renderConSesion(<FormularioIngreso rol="cliente" />, sesion);
     await ingresar();
-    await waitFor(() => expect(replace).toHaveBeenCalledWith("/marcas"));
+    await waitFor(() => expect(replace).toHaveBeenCalledWith("/inicio"));
     expect(sesion.ingresar).toHaveBeenCalledWith(
       "cliente.zontes@ejemplo.test",
       "secreta1",
@@ -156,14 +156,14 @@ describe("F1-FE-01 · ingreso de cliente (UI-02)", () => {
 });
 
 describe("F1-FE-01 · ingreso de administrador (UI-01)", () => {
-  it("administrador válido → entra a su perfil", async () => {
+  it("administrador válido → entra a Reglas de puntos", async () => {
     const { sesion } = crearSesionFalsa(
       {},
       { "GET /me": respuesta(200, ME_ADMIN) },
     );
     renderConSesion(<FormularioIngreso rol="administrador" />, sesion);
     await ingresar("admin@ejemplo.test");
-    await waitFor(() => expect(replace).toHaveBeenCalledWith("/admin/perfil"));
+    await waitFor(() => expect(replace).toHaveBeenCalledWith("/admin/reglas"));
   });
 
   it("cliente en el acceso de administración → rechazo sin revelar más", async () => {
