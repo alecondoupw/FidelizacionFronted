@@ -2,7 +2,7 @@ import { createApiClient, type ApiClientOptions } from "./client";
 
 export { ApiError, createApiClient, type ApiClient } from "./client";
 export { getHealth } from "./health";
-export { getMe, registrarCliente } from "./identidad";
+export { ESPERA_ARRANQUE_MS, getMe, registrarCliente } from "./identidad";
 
 /**
  * Cliente por defecto para el navegador y el servidor de Next.js.

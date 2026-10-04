@@ -1,6 +1,15 @@
 import { describe, expect, it, vi } from "vitest";
 import { ApiError, createApiClient } from "./client";
 import { getHealth } from "./health";
+import { getMe } from "./identidad";
+
+const ME = {
+  uid: "u-1",
+  rol: "cliente",
+  activo: true,
+  marcas: ["zontes"],
+  vinculo: "vinculado",
+};
 
 function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -112,5 +121,32 @@ describe("createApiClient", () => {
       timeoutMs: 20,
     });
     await expect(getHealth(client)).rejects.toMatchObject({ code: "TIMEOUT" });
+  });
+
+  it("una petición puede ampliar su tiempo de espera (backend que despierta, DEC-13)", async () => {
+    const fetchImpl = vi.fn<typeof fetch>(
+      (_input, init) =>
+        new Promise<Response>((resolve, reject) => {
+          init?.signal?.addEventListener("abort", () =>
+            reject(init.signal?.reason),
+          );
+          setTimeout(
+            () =>
+              resolve(
+                new Response(JSON.stringify(ME), {
+                  headers: { "Content-Type": "application/json" },
+                }),
+              ),
+            60,
+          );
+        }),
+    );
+    const client = createApiClient({
+      baseUrl: "http://be",
+      fetchImpl,
+      timeoutMs: 20,
+    });
+    await expect(getMe(client)).rejects.toMatchObject({ code: "TIMEOUT" });
+    await expect(getMe(client, { timeoutMs: 500 })).resolves.toEqual(ME);
   });
 });

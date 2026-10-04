@@ -48,6 +48,8 @@ export interface RequestOptions<T> {
   headers?: Record<string, string>;
   schema: z.ZodType<T>;
   signal?: AbortSignal;
+  /** Sustituye el tiempo de espera por defecto (10 s) en esta petición. */
+  timeoutMs?: number;
 }
 
 export interface ApiClient {

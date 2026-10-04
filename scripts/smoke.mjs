@@ -163,7 +163,10 @@ try {
     const ok =
       response.status === 200 &&
       html.includes(marker) &&
-      (!ausente || !html.includes(ausente));
+      (!ausente || !html.includes(ausente)) &&
+      // Cabeceras de seguridad de next.config.ts (F7).
+      response.headers.get("x-frame-options") === "DENY" &&
+      response.headers.get("x-content-type-options") === "nosniff";
     console.log(`${ok ? "PASS" : "FAIL"} GET ${path} -> ${response.status}`);
     if (!ok) failed = true;
   }

@@ -13,7 +13,7 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ApiError, getMe } from "@/lib/api";
+import { ApiError, ESPERA_ARRANQUE_MS, getMe } from "@/lib/api";
 import type { MeResponse } from "@/lib/api/contract";
 import type { Aviso } from "@/lib/auth/mensajes";
 import { mensajeError } from "@/lib/auth/mensajes";
@@ -71,7 +71,7 @@ export function GuardiaRol({
 
   const cargar = useCallback(async (): Promise<Estado | null> => {
     try {
-      const me = await getMe(sesion.api());
+      const me = await getMe(sesion.api(), { timeoutMs: ESPERA_ARRANQUE_MS });
       return me.rol === rol
         ? { tipo: "listo", me }
         : { tipo: "rol-incorrecto", me };
@@ -170,10 +170,27 @@ export function GuardiaRol({
     );
   }
 
+  return <CargandoCuenta />;
+}
+
+/** Tras unos segundos explica la espera (backend suspendido, DEC-13). */
+function CargandoCuenta() {
+  const [lento, setLento] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setLento(true), 5_000);
+    return () => clearTimeout(t);
+  }, []);
   return (
     <PantallaCentrada>
       <div aria-busy="true" aria-live="polite" className="flex flex-col gap-3">
-        <span className="sr-only">Cargando tu cuenta…</span>
+        {lento ? (
+          <p className="text-sm text-muted-foreground">
+            Conectando con el servidor. Si estuvo inactivo, la primera carga
+            puede tardar hasta un minuto.
+          </p>
+        ) : (
+          <span className="sr-only">Cargando tu cuenta…</span>
+        )}
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-24 w-full" />
         <Skeleton className="h-24 w-full" />

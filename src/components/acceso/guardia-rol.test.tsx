@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
@@ -42,6 +42,19 @@ describe("F1-FE-01/03 · GuardiaRol", () => {
     renderConSesion(guardia(), sesion);
     expect(screen.getByText("Cargando tu cuenta…")).toBeTruthy();
     expect(screen.queryByText(/Contenido protegido/)).toBeNull();
+  });
+
+  it("si /me tarda, explica que el servidor puede estar despertando", async () => {
+    vi.useFakeTimers();
+    try {
+      const { sesion } = crearSesionFalsa({ estado: "cargando" });
+      renderConSesion(guardia(), sesion);
+      expect(screen.queryByText(/puede tardar hasta un minuto/)).toBeNull();
+      await act(() => vi.advanceTimersByTimeAsync(5_000));
+      expect(screen.getByText(/puede tardar hasta un minuto/)).toBeTruthy();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("rol correcto → muestra el contenido con el perfil del backend", async () => {

@@ -2,7 +2,7 @@
 
 Frontend **Next.js + TypeScript** de la plataforma de fidelización multimarca Zontes / Kiden / NIU (vista cliente y vista administrador). La documentación canónica, decisiones y evidencias viven en el Core de Obsidian del repositorio [FidelizacionDoc](https://github.com/alecondoupw/FidelizacionDoc) (`Zontes-Core/`). Este repositorio contiene sólo código.
 
-**Estado:** F1 — identidad implementada y probada con dobles: `/ingresar` y `/registro` (cliente), `/admin/ingresar`, `/marcas`, `/perfil` y `/admin/perfil`. Sin las variables `NEXT_PUBLIC_FIREBASE_*` las pantallas de acceso avisan que la autenticación no está configurada. `/diagnostico` sigue siendo técnica.
+**Estado:** F1–F6 implementadas y verificadas (cliente: acceso, inicio, puntos, historial, catálogo y canje, mis canjes, marcas, novedades y perfil; administración: dashboard, clientes, administradores, reglas, vencimiento, registro de puntos, beneficios, canjes, reportes, exportación y contenido). F7 (entrega y operación) en curso. Sin las variables `NEXT_PUBLIC_FIREBASE_*` las pantallas de acceso avisan que la autenticación no está configurada; `/diagnostico` es técnica.
 
 ## Requisitos
 
@@ -30,6 +30,10 @@ npm run dev                  # http://localhost:3000
 | `npm run test:integration`        | FE→BE contra un backend vivo: `INTEGRATION_API_BASE_URL=http://localhost:4000 npm run test:integration` |
 | `npm run smoke`                   | Arranca el build y comprueba `/` y `/diagnostico` (requiere `npm run build`)                            |
 | `npm run check`                   | formato → lint → typecheck → test → build                                                               |
+
+## Despliegue
+
+Vercel (DEC-13): importar el repositorio, cargar `NEXT_PUBLIC_API_BASE_URL` y las cuatro `NEXT_PUBLIC_FIREBASE_*` **antes** de compilar (se insertan en el build) y elegir Node.js 24. `next.config.ts` añade cabeceras de seguridad a todas las rutas. Si el backend gratuito está suspendido, la primera carga espera hasta 75 s y lo explica. Procedimiento completo en el Core: `Zontes-Core/08-Produccion/Manual de despliegue y operacion.md`.
 
 ## Convenciones
 

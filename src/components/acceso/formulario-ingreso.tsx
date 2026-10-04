@@ -3,12 +3,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { ApiError, getMe } from "@/lib/api";
+import { ApiError, ESPERA_ARRANQUE_MS, getHealth, getMe } from "@/lib/api";
 import { leerAviso, mensajeError } from "@/lib/auth/mensajes";
 import { useSesion } from "@/lib/auth/sesion";
 import { Campo } from "./campo";
@@ -49,6 +49,12 @@ export function FormularioIngreso({
   const textos = TEXTOS[rol];
   const avisoTexto = leerAviso(aviso ?? null);
 
+  // Despierta el backend suspendido (DEC-13) mientras se escribe la contraseña.
+  useEffect(() => {
+    if (sesion.configurada) getHealth(sesion.api()).catch(() => undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const {
     register,
     handleSubmit,
@@ -64,7 +70,7 @@ export function FormularioIngreso({
     setError(null);
     try {
       await sesion.ingresar(correo, contrasena);
-      const me = await getMe(sesion.api());
+      const me = await getMe(sesion.api(), { timeoutMs: ESPERA_ARRANQUE_MS });
       if (me.rol !== rol) {
         await rechazar(
           rol === "administrador"

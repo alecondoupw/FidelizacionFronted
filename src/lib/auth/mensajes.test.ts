@@ -43,6 +43,20 @@ describe("mensajeError", () => {
     ).toContain("No pudimos conectar");
   });
 
+  it("un 5xx muestra una referencia corta para buscarlo en los registros; un 4xx no", () => {
+    const error = (status: number) =>
+      new ApiError({
+        status,
+        code: status >= 500 ? "INTERNAL_ERROR" : "RATE_LIMITED",
+        message: "Mensaje del servidor.",
+        requestId: "3f2a9c1e-7b4d-4e2a-9c1e-7b4d4e2a9c1e",
+      });
+    expect(mensajeError(error(500))).toBe(
+      "Mensaje del servidor. (referencia 3f2a9c1e)",
+    );
+    expect(mensajeError(error(429))).toBe("Mensaje del servidor.");
+  });
+
   it("leerAviso sólo acepta avisos conocidos", () => {
     expect(leerAviso("sesion-cerrada")).toBe("Cerraste sesión correctamente.");
     expect(leerAviso("otro")).toBeNull();

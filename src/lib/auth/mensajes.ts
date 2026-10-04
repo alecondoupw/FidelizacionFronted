@@ -42,8 +42,14 @@ export function mensajeError(error: unknown): string {
         return "No pudimos conectar con el servidor. Inténtalo de nuevo.";
       case "AUTH_NOT_CONFIGURED":
         return "La autenticación no está disponible en este entorno.";
-      default:
-        return error.message || "Ocurrió un error inesperado.";
+      default: {
+        const mensaje = error.message || "Ocurrió un error inesperado.";
+        // Los fallos del servidor llevan una referencia para buscarlos en los
+        // registros del backend (F7, observabilidad).
+        return error.status >= 500 && error.requestId
+          ? `${mensaje} (referencia ${error.requestId.slice(0, 8)})`
+          : mensaje;
+      }
     }
   }
   const code = (error as { code?: unknown } | null)?.code;

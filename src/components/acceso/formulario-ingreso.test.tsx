@@ -43,6 +43,16 @@ describe("F1-FE-01 · ingreso de cliente (UI-02)", () => {
     );
   });
 
+  it("al abrir el acceso despierta el backend con /health", async () => {
+    const { sesion, fetchImpl } = crearSesionFalsa();
+    renderConSesion(<FormularioIngreso rol="cliente" />, sesion);
+    await waitFor(() =>
+      expect(String(fetchImpl.mock.calls[0]?.[0])).toBe(
+        "http://be/api/v1/health",
+      ),
+    );
+  });
+
   it("valida en el navegador antes de llamar a Firebase", async () => {
     const { sesion } = crearSesionFalsa();
     renderConSesion(<FormularioIngreso rol="cliente" />, sesion);
