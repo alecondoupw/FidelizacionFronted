@@ -110,11 +110,7 @@ export default function AdminLayout({ children }: LayoutProps<"/admin">) {
   return (
     <div className="tema-admin flex flex-1 flex-col bg-background">
       <GuardiaRol rol="administrador" rutaAcceso="/admin/ingresar">
-        <Shell
-          items={ITEMS}
-          rutaAcceso="/admin/ingresar"
-          rolEtiqueta="Administrador"
-        >
+        <Shell items={ITEMS} rutaAcceso="/admin/ingresar">
           {children}
         </Shell>
       </GuardiaRol>

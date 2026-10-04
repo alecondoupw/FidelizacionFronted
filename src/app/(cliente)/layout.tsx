@@ -26,7 +26,7 @@ const ITEMS: ItemNavegacion[] = [
 export default function ClienteLayout({ children }: LayoutProps<"/">) {
   return (
     <GuardiaRol rol="cliente" rutaAcceso="/ingresar">
-      <Shell items={ITEMS} rutaAcceso="/ingresar" rolEtiqueta="Cliente">
+      <Shell items={ITEMS} rutaAcceso="/ingresar">
         {children}
       </Shell>
     </GuardiaRol>

@@ -20,24 +20,21 @@ export interface ItemNavegacion {
 
 /**
  * Marco común (SRC-03 p. 2, SRC-02 p. 8): barra lateral en escritorio;
- * encabezado compacto y barra inferior en móvil. Sólo lista secciones que
+ * barra inferior en móvil. Sólo lista secciones que
  * existen; la navegación crece con cada fase.
  */
 export function Shell({
   items,
   rutaAcceso,
-  rolEtiqueta,
   children,
 }: {
   items: ItemNavegacion[];
   rutaAcceso: string;
-  rolEtiqueta: string;
   children: ReactNode;
 }) {
   const sesion = useSesion();
   const router = useRouter();
   const pathname = usePathname();
-  const nombre = sesion.usuario?.nombre || sesion.usuario?.correo || "";
 
   const cerrarSesion = async () => {
     await sesion.cerrarSesion();
@@ -88,15 +85,6 @@ export function Shell({
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center justify-between gap-4 border-b bg-card px-4 py-3 md:px-8">
-          <MarcaApp className="md:hidden" />
-          <div className="ml-auto flex min-w-0 flex-col items-end text-right">
-            <span className="max-w-[9rem] truncate text-sm font-semibold sm:max-w-[16rem]">
-              {nombre}
-            </span>
-            <span className="text-xs text-muted-foreground">{rolEtiqueta}</span>
-          </div>
-        </header>
         <div className="flex flex-1 flex-col px-4 pt-6 pb-24 md:px-8 md:pb-10">
           {children}
         </div>
