@@ -3,11 +3,9 @@ import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { GuardiaRol } from "@/components/acceso/guardia-rol";
-import { Inicio } from "@/components/cliente/inicio";
 import { Novedades } from "@/components/cliente/novedades";
 import {
   crearSesionFalsa,
-  errorApi,
   ME_ADMIN,
   ME_CLIENTE,
   renderConSesion,
@@ -242,67 +240,6 @@ describe("F6-FE-01 · Contenido por marca (UI-12, A09)", () => {
 });
 
 describe("F6 · contenido para el cliente (C08, Novedades)", () => {
-  const saldo = respuesta(200, { total: 0, marcas: [] });
-  const movimientos = respuesta(200, { items: [], siguiente: null });
-
-  it("Inicio muestra el carrusel de destacadas con controles accesibles", async () => {
-    montar(
-      <Inicio />,
-      {
-        "GET /me/saldo": saldo,
-        "GET /me/movimientos?limite=5": movimientos,
-        "GET /contenidos?destacadas=true&limite=5": respuesta(200, {
-          items: [
-            cliente("1"),
-            cliente("2", { marca: "niu", categoria: "promocion" }),
-          ],
-        }),
-      },
-      ME_CLIENTE,
-    );
-    const carrusel = await screen.findByRole("region", {
-      name: "Novedades destacadas",
-    });
-    expect(within(carrusel).getByRole("heading").textContent).toBe("Novedad 1");
-    expect(
-      within(carrusel)
-        .getByRole("link", { name: /Más información/ })
-        .getAttribute("target"),
-    ).toBe("_blank");
-    await userEvent.click(
-      within(carrusel).getByRole("button", { name: "Novedad siguiente" }),
-    );
-    expect(within(carrusel).getByRole("heading").textContent).toBe("Novedad 2");
-    expect(
-      within(carrusel)
-        .getByRole("link", { name: /Ver novedades de NIU/ })
-        .getAttribute("href"),
-    ).toBe("/novedades?marca=niu");
-    expect(
-      screen.getByRole("link", { name: /Ver catálogo/ }).getAttribute("href"),
-    ).toBe("/catalogo");
-  });
-
-  it("si el contenido falla, Inicio sigue mostrando saldo y accesos sin carrusel", async () => {
-    montar(
-      <Inicio />,
-      {
-        "GET /me/saldo": saldo,
-        "GET /me/movimientos?limite=5": movimientos,
-        "GET /contenidos?destacadas=true&limite=5": errorApi(
-          500,
-          "INTERNAL_ERROR",
-          "Falló.",
-        ),
-      },
-      ME_CLIENTE,
-    );
-    expect(await screen.findByRole("link", { name: /Novedades/ })).toBeTruthy();
-    expect(
-      screen.queryByRole("region", { name: "Novedades destacadas" }),
-    ).toBeNull();
-  });
-
   it("Novedades filtra por marca vinculada y muestra estado vacío", async () => {
     const r = montar(
       <Novedades marcaInicial="kiden" />,

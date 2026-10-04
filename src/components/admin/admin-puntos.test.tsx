@@ -1,9 +1,15 @@
 // @vitest-environment jsdom
-import { cleanup, screen, waitFor, within } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { GuardiaRol } from "@/components/acceso/guardia-rol";
-import { resumenRegla } from "@/lib/formato";
+import { hoyEnBolivia, resumenRegla, sumarAnios } from "@/lib/formato";
 import {
   crearSesionFalsa,
   errorApi,
@@ -14,7 +20,6 @@ import {
 } from "@/test/sesion-falsa";
 import { RegistrarPuntos } from "./registrar-puntos";
 import { ReglasPuntos } from "./reglas";
-import { VencimientoPuntos } from "./vencimiento";
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ replace: vi.fn() }) }));
 afterEach(cleanup);
@@ -185,183 +190,213 @@ describe("F2-FE-02 · Reglas de puntos (UI-04, A05)", () => {
   });
 });
 
-describe("F2-FE-02 · Vencimiento (UI-19, A06)", () => {
-  const vig = (
-    marca: string,
-    activa: boolean,
-    cantidad = 12,
-    unidad = "meses",
-  ) => ({
-    marca,
-    activa,
-    cantidad,
-    unidad,
-    actualizadoEn: null,
-    actualizadoPor: null,
-  });
-  const resp = {
-    "GET /admin/vigencias": respuesta(200, {
-      items: [vig("zontes", true), vig("kiden", false), vig("niu", false)],
-    }),
-    "GET /admin/vigencias/zontes/historial": respuesta(200, {
-      items: [
-        {
-          en: EN,
-          actor: "u-2",
-          antes: { activa: false, cantidad: 12, unidad: "meses" },
-          despues: { activa: true, cantidad: 12, unidad: "meses" },
-        },
-      ],
-    }),
-    "GET /admin/vigencias/kiden/historial": respuesta(200, { items: [] }),
-    "GET /admin/vigencias/niu/historial": respuesta(200, { items: [] }),
+describe("F8-FE-03 · Registrar puntos (UI-24, SRC-06 p. 3)", () => {
+  const ana = {
+    uid: "u-ana",
+    nombre: "Ana Pérez",
+    correo: "ana@ejemplo.test",
+    marcas: ["zontes", "niu"],
+    vinculo: "vinculado",
+    activo: true,
+    puntos: 40,
+    creadoEn: EN,
+    ultimoAcceso: null,
+    verificacionPendiente: false,
   };
+  const BUSCAR_ANA = "GET /admin/clientes?correo=ana%40ejemplo.test&limite=1";
+  const hoy = hoyEnBolivia();
+  const vence = sumarAnios(hoy, 1);
 
-  it("muestra el historial con el administrador actual como «Tú»", async () => {
-    montar(<VencimientoPuntos />, resp);
-    const h = await screen.findByRole("list", {
-      name: "Historial de configuración",
+  async function prepararFormulario(respuestas: Respuestas) {
+    respuestas[BUSCAR_ANA] ??= respuesta(200, {
+      items: [ana],
+      siguiente: null,
     });
-    expect(h.textContent).toContain("Sin vencimiento");
-    expect(h.textContent).toContain("Vencen a los 12 meses");
-    expect(h.textContent).toContain("Tú");
-  });
-
-  it("valida el máximo de 10 años y guarda con PUT", async () => {
-    const { fetchImpl } = montar(<VencimientoPuntos />, {
-      ...resp,
-      "PUT /admin/vigencias/zontes": respuesta(
-        200,
-        vig("zontes", true, 18, "meses"),
-      ),
+    const r = montar(<RegistrarPuntos />, respuestas);
+    const user = userEvent.setup();
+    const formulario = await screen.findByRole("form", {
+      name: "Ajuste de puntos",
     });
-    const user = userEvent.setup();
-    const periodo = await screen.findByLabelText("Periodo");
-    await user.clear(periodo);
-    await user.type(periodo, "11");
-    await user.selectOptions(screen.getByLabelText("Unidad"), "anios");
-    expect(screen.getByText("El periodo máximo es de 10 años.")).toBeTruthy();
-    expect(
-      screen
-        .getByRole("button", { name: "Guardar Zontes" })
-        .hasAttribute("disabled"),
-    ).toBe(true);
-    await user.selectOptions(screen.getByLabelText("Unidad"), "meses");
-    await user.clear(periodo);
-    await user.type(periodo, "18");
-    await user.click(screen.getByRole("button", { name: "Guardar Zontes" }));
-    await waitFor(() =>
-      expect(cuerpos(fetchImpl, "PUT")[0]?.body).toEqual({
-        activa: true,
-        cantidad: 18,
-        unidad: "meses",
-      }),
-    );
-  });
-});
-
-describe("DEC-05/14 · Registrar puntos (UI-24 propuesta)", () => {
-  it("reintentar tras un fallo de red reutiliza la misma clave de idempotencia", async () => {
-    const respuestas: Respuestas = {};
-    const { fetchImpl } = montar(<RegistrarPuntos />, respuestas);
-    const user = userEvent.setup();
-    const formulario = (
-      await screen.findByRole("button", { name: "Registrar evento" })
-    ).closest("form")!;
     await user.type(
       within(formulario).getByLabelText("Correo del cliente"),
       "ana@ejemplo.test",
     );
     await user.click(
-      within(formulario).getByRole("button", { name: "Registrar evento" }),
+      within(formulario).getByRole("button", { name: "Buscar" }),
+    );
+    await within(formulario).findByText("Ana Pérez");
+    return { ...r, user, formulario };
+  }
+
+  it("sólo un formulario que suma: sin bloque de eventos ni restas", async () => {
+    montar(<RegistrarPuntos />, {});
+    expect(
+      await screen.findByText(
+        "Suma puntos a un cliente e indica el motivo y la fecha en que vencerán.",
+      ),
+    ).toBeTruthy();
+    expect(screen.getAllByRole("form")).toHaveLength(1);
+    expect(screen.queryByText(/Registrar evento/)).toBeNull();
+    expect(screen.queryByLabelText("Evento")).toBeNull();
+    expect(screen.queryByText(/resta/i)).toBeNull();
+    expect(screen.getByLabelText("Puntos a sumar")).toBeTruthy();
+    const fecha = screen.getByLabelText("¿Cuándo vencerán?");
+    expect(fecha.getAttribute("min")).toBe(hoy);
+    expect(fecha.getAttribute("max")).toBe(sumarAnios(hoy, 2));
+  });
+
+  it("busca al cliente por correo y ofrece sólo sus marcas vinculadas", async () => {
+    const { formulario, user } = await prepararFormulario({
+      "GET /admin/clientes?correo=nadie%40ejemplo.test&limite=1": respuesta(
+        200,
+        {
+          items: [],
+          siguiente: null,
+        },
+      ),
+    });
+    const marcas = within(formulario).getByLabelText("Marca");
+    expect(
+      [...marcas.querySelectorAll("option")].map((o) => o.textContent),
+    ).toEqual(["Zontes", "NIU"]);
+    // Otro correo sin cuenta: se avisa y no se puede elegir marca.
+    const correo = within(formulario).getByLabelText("Correo del cliente");
+    await user.clear(correo);
+    await user.type(correo, "nadie@ejemplo.test{Enter}");
+    expect(
+      await within(formulario).findByText(
+        "No hay un cliente registrado con ese correo.",
+      ),
+    ).toBeTruthy();
+    expect(
+      within(formulario).getByLabelText("Marca").hasAttribute("disabled"),
+    ).toBe(true);
+  });
+
+  it("rechaza cero o negativos, exige motivo y fecha antes de confirmar", async () => {
+    const { formulario, user, fetchImpl } = await prepararFormulario({});
+    await user.type(within(formulario).getByLabelText("Puntos a sumar"), "-5");
+    await user.click(
+      within(formulario).getByRole("button", { name: "Revisar y registrar" }),
     );
     expect(
-      (await within(formulario).findByRole("alert")).textContent,
-    ).toContain("No pudimos conectar");
+      await within(formulario).findByText(
+        "Ingresa una cantidad mayor que cero.",
+      ),
+    ).toBeTruthy();
+    expect(within(formulario).getByText(/mínimo 5 caracteres/)).toBeTruthy();
+    expect(
+      within(formulario).getByText("Elige la fecha de vencimiento."),
+    ).toBeTruthy();
+    expect(screen.queryByRole("alertdialog")).toBeNull();
+    expect(cuerpos(fetchImpl, "POST")).toHaveLength(0);
+  });
 
-    respuestas["POST /admin/eventos"] = respuesta(201, {
-      resultado: "otorgado",
-      puntos: 100,
+  it("confirma con todos los datos y registra una sola vez", async () => {
+    let soltar!: () => void;
+    const respuestas: Respuestas = {};
+    const { formulario, user, fetchImpl } =
+      await prepararFormulario(respuestas);
+    respuestas["POST /admin/asignaciones"] = respuesta(201, {
       movimientoId: "m1",
-      venceEn: "2026-11-04T03:59:59.999Z",
+      puntos: 120,
+      venceEn: `${vence}T23:59:59.999-04:00`.replace("-04:00", "Z"),
+      disponible: 160,
       repetido: false,
     });
-    await user.click(
-      within(formulario).getByRole("button", { name: "Registrar evento" }),
-    );
-    expect(
-      await within(formulario).findByText(
-        /Evento registrado: 100 puntos de Zontes, vencen el/,
-      ),
-    ).toBeTruthy();
-    const intentos = cuerpos(fetchImpl, "POST").filter((c) =>
-      c.url.endsWith("/admin/eventos"),
-    );
-    expect(intentos).toHaveLength(2);
-    expect(intentos[0]!.body.idExterno).toBe(intentos[1]!.body.idExterno);
-  });
-
-  it("informa un evento sin regla activa", async () => {
-    montar(<RegistrarPuntos />, {
-      "POST /admin/eventos": respuesta(201, {
-        resultado: "sin_puntos",
-        puntos: 0,
-        motivo: "regla_inactiva",
-        repetido: false,
-      }),
+    const original = fetchImpl.getMockImplementation()!;
+    fetchImpl.mockImplementation(async (url, init) => {
+      if (String(url).endsWith("/admin/asignaciones")) {
+        await new Promise<void>((r) => (soltar = r));
+      }
+      return original(url, init);
     });
-    const user = userEvent.setup();
-    const formulario = (
-      await screen.findByRole("button", { name: "Registrar evento" })
-    ).closest("form")!;
-    await user.type(
-      within(formulario).getByLabelText("Correo del cliente"),
-      "ana@ejemplo.test",
-    );
-    await user.click(
-      within(formulario).getByRole("button", { name: "Registrar evento" }),
-    );
-    expect(
-      await within(formulario).findByText(
-        /sin puntos: la regla de ese evento está inactiva/,
-      ),
-    ).toBeTruthy();
-  });
 
-  it("el ajuste exige motivo y muestra el saldo insuficiente", async () => {
-    montar(<RegistrarPuntos />, {
-      "POST /admin/ajustes": errorApi(
-        409,
-        "INSUFFICIENT_BALANCE",
-        "El saldo disponible (20 puntos) no alcanza para el ajuste.",
-      ),
-    });
-    const user = userEvent.setup();
-    const formulario = (
-      await screen.findByRole("button", { name: "Aplicar ajuste" })
-    ).closest("form")!;
-    await user.type(
-      within(formulario).getByLabelText("Correo del cliente"),
-      "ana@ejemplo.test",
-    );
-    await user.type(within(formulario).getByLabelText(/Puntos/), "-50");
-    await user.click(
-      within(formulario).getByRole("button", { name: "Aplicar ajuste" }),
-    );
-    expect(
-      await within(formulario).findByText(
-        "Describe el motivo (mínimo 5 caracteres).",
-      ),
-    ).toBeTruthy();
+    await user.selectOptions(within(formulario).getByLabelText("Marca"), "niu");
+    await user.type(within(formulario).getByLabelText("Puntos a sumar"), "120");
     await user.type(
       within(formulario).getByLabelText("Motivo"),
-      "Corrección de compra anulada",
+      "Compra de repuestos en tienda",
     );
+    fireEvent.change(within(formulario).getByLabelText("¿Cuándo vencerán?"), {
+      target: { value: vence },
+    });
     await user.click(
-      within(formulario).getByRole("button", { name: "Aplicar ajuste" }),
+      within(formulario).getByRole("button", { name: "Revisar y registrar" }),
     );
+    const dialogo = await screen.findByRole("alertdialog");
+    for (const texto of [
+      "Ana Pérez · ana@ejemplo.test",
+      "NIU",
+      "120 puntos",
+      "Compra de repuestos en tienda",
+      "(fin del día)",
+    ]) {
+      expect(dialogo.textContent).toContain(texto);
+    }
+    const boton = within(dialogo).getByRole("button", {
+      name: "Registrar puntos",
+    });
+    await user.click(boton);
     expect(
-      (await within(formulario).findByRole("alert")).textContent,
-    ).toContain("no alcanza");
+      within(dialogo).getByRole("button", { name: "Registrando…" }),
+    ).toHaveProperty("disabled", true);
+    soltar();
+    expect(
+      await screen.findByText(/Se sumaron 120 puntos a Ana Pérez en NIU/),
+    ).toBeTruthy();
+    const posts = cuerpos(fetchImpl, "POST");
+    expect(posts).toHaveLength(1);
+    expect(posts[0]!.body).toEqual({
+      idSolicitud: expect.stringMatching(/^panel-/),
+      correoCliente: "ana@ejemplo.test",
+      marca: "niu",
+      puntos: 120,
+      motivo: "Compra de repuestos en tienda",
+      vence,
+    });
+  });
+
+  it("reintentar tras un fallo de red reutiliza la misma clave", async () => {
+    const respuestas: Respuestas = {};
+    const { formulario, user, fetchImpl } =
+      await prepararFormulario(respuestas);
+    const completar = async () => {
+      await user.type(
+        within(formulario).getByLabelText("Puntos a sumar"),
+        "10",
+      );
+      await user.type(
+        within(formulario).getByLabelText("Motivo"),
+        "Compra en tienda",
+      );
+      fireEvent.change(within(formulario).getByLabelText("¿Cuándo vencerán?"), {
+        target: { value: vence },
+      });
+      await user.click(
+        within(formulario).getByRole("button", { name: "Revisar y registrar" }),
+      );
+      await user.click(
+        within(await screen.findByRole("alertdialog")).getByRole("button", {
+          name: "Registrar puntos",
+        }),
+      );
+    };
+    await completar();
+    expect((await screen.findByRole("alert")).textContent).toContain(
+      "No pudimos conectar",
+    );
+    respuestas["POST /admin/asignaciones"] = errorApi(
+      422,
+      "BRAND_NOT_LINKED",
+      "El cliente no está vinculado a esa marca.",
+    );
+    await completar();
+    expect((await screen.findByRole("alert")).textContent).toContain(
+      "no está vinculado",
+    );
+    const claves = cuerpos(fetchImpl, "POST").map((c) => c.body.idSolicitud);
+    expect(claves).toHaveLength(2);
+    expect(claves[0]).toBe(claves[1]);
   });
 });

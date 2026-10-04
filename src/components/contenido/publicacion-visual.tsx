@@ -35,7 +35,7 @@ const ICONO: Record<CategoriaContenido, typeof Tag> = {
  * Superficie por marca sin fotos ni logos (DEC-10/11): color de marca de la
  * línea provisional en un tono suave e icono de la categoría.
  */
-const SUPERFICIE: Record<Marca, string> = {
+export const SUPERFICIE_MARCA: Record<Marca, string> = {
   zontes:
     "bg-[color-mix(in_oklab,var(--chart-1)_14%,var(--card))] text-[var(--chart-1)]",
   kiden:
@@ -58,7 +58,7 @@ export function IlustracionPublicacion({
       aria-hidden="true"
       className={cn(
         "flex items-center justify-center rounded-xl",
-        SUPERFICIE[marca],
+        SUPERFICIE_MARCA[marca],
         className,
       )}
     >

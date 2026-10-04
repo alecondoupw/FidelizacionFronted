@@ -9,7 +9,6 @@ export const eventoSchema = z.enum([
   "mantenimiento",
   "asistencia",
 ]);
-export const unidadSchema = z.enum(["dias", "meses", "anios"]);
 export const tipoMovimientoSchema = z.enum([
   "otorgamiento",
   "ajuste",
@@ -18,7 +17,6 @@ export const tipoMovimientoSchema = z.enum([
 ]);
 
 export type Evento = z.infer<typeof eventoSchema>;
-export type Unidad = z.infer<typeof unidadSchema>;
 export type TipoMovimiento = z.infer<typeof tipoMovimientoSchema>;
 
 export const saldoSchema = z.object({
@@ -64,58 +62,23 @@ export const reglaSchema = z.object({
 });
 export type Regla = z.infer<typeof reglaSchema>;
 
-export const vigenciaSchema = z.object({
-  marca: marcaSchema,
-  activa: z.boolean(),
-  cantidad: z.number().int().positive(),
-  unidad: unidadSchema,
-  actualizadoEn: z.iso.datetime().nullable(),
-  actualizadoPor: z.string().nullable(),
-});
-export type Vigencia = z.infer<typeof vigenciaSchema>;
-
-const valorVigencia = z.object({
-  activa: z.boolean(),
-  cantidad: z.number(),
-  unidad: unidadSchema,
-});
-export const historialVigenciaSchema = z.object({
-  items: z.array(
-    z.object({
-      en: z.iso.datetime(),
-      actor: z.string(),
-      antes: valorVigencia,
-      despues: valorVigencia,
-    }),
-  ),
-});
-export type CambioVigencia = z.infer<
-  typeof historialVigenciaSchema
->["items"][number];
-
-export const resultadoEventoSchema = z.discriminatedUnion("resultado", [
-  z.object({
-    resultado: z.literal("otorgado"),
-    puntos: z.number().int(),
-    movimientoId: z.string(),
-    venceEn: z.iso.datetime().nullable(),
-    repetido: z.boolean(),
-  }),
-  z.object({
-    resultado: z.literal("sin_puntos"),
-    puntos: z.literal(0),
-    motivo: z.enum(["sin_regla", "regla_inactiva"]),
-    repetido: z.boolean(),
-  }),
-]);
-export type ResultadoEvento = z.infer<typeof resultadoEventoSchema>;
-
-export const resultadoAjusteSchema = z.object({
+/** Resultado de sumar puntos desde el panel (DEC-18). */
+export const resultadoAsignacionSchema = z.object({
   movimientoId: z.string(),
   puntos: z.number().int(),
+  venceEn: z.iso.datetime(),
   disponible: z.number().int(),
   repetido: z.boolean(),
 });
+export type ResultadoAsignacion = z.infer<typeof resultadoAsignacionSchema>;
+
+/** Regla activa de una marca vinculada, para «¿Cómo ganar puntos?». */
+export const reglaClienteSchema = z.object({
+  marca: marcaSchema,
+  evento: eventoSchema,
+  puntos: z.number().int(),
+});
+export type ReglaCliente = z.infer<typeof reglaClienteSchema>;
 
 export type Marca = z.infer<typeof marcaSchema>;
 
@@ -138,6 +101,11 @@ export function getMovimientos(
   const qs = params.size ? `?${params}` : "";
   return c.request(`/me/movimientos${qs}`, { schema: paginaMovimientosSchema });
 }
+
+export const getReglasCliente = (c: ApiClient) =>
+  c.request("/reglas", {
+    schema: z.object({ items: z.array(reglaClienteSchema) }),
+  });
 
 // ── Administración ────────────────────────────────────────────────────
 export const getReglas = (c: ApiClient) =>
@@ -167,60 +135,20 @@ export const eliminarRegla = (c: ApiClient, id: string) =>
     schema: z.undefined(),
   });
 
-export const getVigencias = (c: ApiClient) =>
-  c.request("/admin/vigencias", {
-    schema: z.object({ items: z.array(vigenciaSchema) }),
-  });
-
-export const guardarVigencia = (
-  c: ApiClient,
-  marca: Marca,
-  body: { activa: boolean; cantidad: number; unidad: Unidad },
-) =>
-  c.request(`/admin/vigencias/${marca}`, {
-    method: "PUT",
-    body,
-    schema: vigenciaSchema,
-  });
-
-export const getHistorialVigencia = (c: ApiClient, marca: Marca) =>
-  c.request(`/admin/vigencias/${marca}/historial`, {
-    schema: historialVigenciaSchema,
-  });
-
-export const registrarEvento = (
+/** Suma puntos con motivo y fecha de vencimiento AAAA-MM-DD (SRC-06 p. 3). */
+export const asignarPuntos = (
   c: ApiClient,
   body: {
-    idExterno: string;
-    evento: Evento;
-    marca: Marca;
-    correoCliente: string;
-  },
-) =>
-  c.request("/admin/eventos", {
-    method: "POST",
-    body,
-    schema: resultadoEventoSchema,
-  });
-
-export const ajustarPuntos = (
-  c: ApiClient,
-  body: {
-    idExterno: string;
+    idSolicitud: string;
     marca: Marca;
     correoCliente: string;
     puntos: number;
     motivo: string;
+    vence: string;
   },
 ) =>
-  c.request("/admin/ajustes", {
+  c.request("/admin/asignaciones", {
     method: "POST",
     body,
-    schema: resultadoAjusteSchema,
-  });
-
-export const procesarVencimientos = (c: ApiClient) =>
-  c.request("/admin/vencimientos/procesar", {
-    method: "POST",
-    schema: z.object({ lotesVencidos: z.number(), cuentas: z.number() }),
+    schema: resultadoAsignacionSchema,
   });

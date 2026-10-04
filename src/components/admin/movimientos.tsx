@@ -63,7 +63,7 @@ const descripcion = (m: MovimientoGlobal) =>
 
 /**
  * UI-20 Movimientos (A07): libro global del más reciente al más antiguo; es
- * el desglose al que llevan los KPI de Dashboard, Actividad y Tendencias.
+ * el desglose al que llevan los KPI de Dashboard y Actividad.
  */
 export function MovimientosAdmin({
   inicial,

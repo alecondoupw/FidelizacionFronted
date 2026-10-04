@@ -119,7 +119,7 @@ export function ReglasPuntos() {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <EncabezadoPagina
           titulo="Reglas de puntos"
-          descripcion="Cada regla define evento, marca y puntos. Al registrar el evento para un cliente, los puntos se otorgan automáticamente."
+          descripcion="Cada regla define evento, marca y puntos. Se aplica a los eventos que envían los sistemas integrados y se muestra al cliente en «¿Cómo ganar puntos?»."
         />
         <Button className="h-10" onClick={() => setEditando("nueva")}>
           <Plus aria-hidden="true" />

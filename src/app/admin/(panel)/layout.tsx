@@ -4,7 +4,6 @@ import {
   Activity,
   Download,
   Gift,
-  Hourglass,
   Megaphone,
   LayoutDashboard,
   List,
@@ -12,7 +11,6 @@ import {
   ShieldCheck,
   SlidersHorizontal,
   Ticket,
-  TrendingUp,
   UserRound,
   Users,
   BarChart3,
@@ -20,7 +18,10 @@ import {
 import { GuardiaRol } from "@/components/acceso/guardia-rol";
 import { Shell, type ItemNavegacion } from "@/components/shell/shell";
 
-/** Secciones del panel agrupadas como en A13 (SRC-02 p. 8); F6 suma Contenido. */
+/**
+ * Secciones del panel agrupadas como en A13 (SRC-02 p. 8). F8 (SRC-06 p. 2):
+ * sin Tendencias ni Vencimiento; «Publicaciones por marca».
+ */
 const ITEMS: ItemNavegacion[] = [
   {
     href: "/admin/dashboard",
@@ -49,12 +50,6 @@ const ITEMS: ItemNavegacion[] = [
     grupo: "Fidelización",
   },
   {
-    href: "/admin/vencimiento",
-    etiqueta: "Vencimiento",
-    icono: Hourglass,
-    grupo: "Fidelización",
-  },
-  {
     href: "/admin/registrar",
     etiqueta: "Registrar puntos",
     icono: PlusCircle,
@@ -80,7 +75,8 @@ const ITEMS: ItemNavegacion[] = [
   },
   {
     href: "/admin/contenido",
-    etiqueta: "Contenido por marca",
+    etiqueta: "Publicaciones por marca",
+    corta: "Publicaciones",
     icono: Megaphone,
     grupo: "Contenido",
   },
@@ -88,12 +84,6 @@ const ITEMS: ItemNavegacion[] = [
     href: "/admin/actividad",
     etiqueta: "Actividad",
     icono: Activity,
-    grupo: "Análisis",
-  },
-  {
-    href: "/admin/tendencias",
-    etiqueta: "Tendencias",
-    icono: TrendingUp,
     grupo: "Análisis",
   },
   {

@@ -30,6 +30,7 @@ import { mensajeError } from "@/lib/auth/mensajes";
 import { useSesion } from "@/lib/auth/sesion";
 import {
   detalleAccion,
+  formatoFecha,
   formatoFechaHora,
   formatoPuntos,
   NOMBRE_ACCION,
@@ -84,6 +85,12 @@ function Contenido({
 }) {
   const sesion = useSesion();
   const router = useRouter();
+  const importadaEn = (marca: DetalleCliente["marcas"][number]) => {
+    const i = c.importadas.find((x) => x.marca === marca);
+    return i
+      ? `Importado como «${i.nombre}» el ${formatoFecha(i.importadoEn)}`
+      : null;
+  };
   const [nombre, setNombre] = useState(c.nombre ?? "");
   const [correo, setCorreo] = useState(c.correo);
   const [aviso, setAviso] = useState<{
@@ -205,7 +212,10 @@ function Contenido({
         </label>
       </Tarjeta>
 
-      <Tarjeta titulo="Puntos por marca">
+      <Tarjeta
+        titulo="Puntos por marca"
+        descripcion="Cada marca conserva su saldo, sus movimientos y sus reglas por separado."
+      >
         <ul className="divide-y" aria-label="Saldos por marca">
           {c.saldos.length === 0 && (
             <li className="py-3 text-sm text-muted-foreground">
@@ -227,6 +237,11 @@ function Contenido({
                   <Badge variant="secondary">
                     Sin vínculo · saldo conservado
                   </Badge>
+                )}
+                {importadaEn(s.marca) && (
+                  <span className="text-xs text-muted-foreground">
+                    {importadaEn(s.marca)}
+                  </span>
                 )}
               </span>
               <span className="font-bold">

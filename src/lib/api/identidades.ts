@@ -46,6 +46,16 @@ export const detalleClienteSchema = clienteSchema.extend({
     }),
   ),
   historial: z.array(eventoHistorialSchema),
+  /** Marcas en que su correo figura en una importación (F8). */
+  importadas: z
+    .array(
+      z.object({
+        marca: marcaSchema,
+        nombre: z.string(),
+        importadoEn: z.iso.datetime(),
+      }),
+    )
+    .default([]),
 });
 export type DetalleCliente = z.infer<typeof detalleClienteSchema>;
 

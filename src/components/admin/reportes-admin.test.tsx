@@ -17,7 +17,6 @@ import { Dashboard } from "./dashboard";
 import { Exportar } from "./exportar";
 import { MovimientosAdmin } from "./movimientos";
 import { ReporteCanjesAdmin } from "./reporte-canjes";
-import { TendenciasAdmin } from "./tendencias";
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ replace: vi.fn() }) }));
 beforeEach(() => {
@@ -245,76 +244,6 @@ describe("F5-FE-01 · Actividad (UI-08, A10)", () => {
     await userEvent.click(screen.getByRole("button", { name: "Aplicar" }));
     expect((await screen.findByRole("alert")).textContent).toContain(
       "como máximo 12 meses",
-    );
-  });
-});
-
-describe("F5-FE-02 · Tendencias (UI-10, A11)", () => {
-  const tendencia = (metrica: string, total: number) => ({
-    metrica,
-    marca: null,
-    granularidad: "dia",
-    actual: {
-      desde: "2026-09-04",
-      hasta: "2026-10-03",
-      total,
-      serie: [{ desde: "2026-09-04", valor: total }],
-    },
-    anterior: {
-      desde: "2026-08-05",
-      hasta: "2026-09-03",
-      total: 9130,
-      serie: [{ desde: "2026-08-05", valor: 9130 }],
-    },
-    variacion: {
-      absoluta: total - 9130,
-      porcentaje: ((total - 9130) / 9130) * 100,
-    },
-    porMarca: [
-      { marca: "zontes", total: 3150 },
-      { marca: "kiden", total: 3950 },
-      { marca: "niu", total: 4300 },
-    ],
-  });
-
-  it("compara con el periodo anterior y enlaza a los registros que la originan", async () => {
-    const r = montar(<TendenciasAdmin />, {
-      [`GET /admin/reportes/tendencias?metrica=otorgados&${R30}`]: respuesta(
-        200,
-        tendencia("otorgados", 11400),
-      ),
-      [`GET /admin/reportes/tendencias?metrica=canjes&${R30}`]: respuesta(
-        200,
-        tendencia("canjes", 7),
-      ),
-    });
-    expect((await screen.findByTestId("total-actual")).textContent).toBe(
-      "11.400",
-    );
-    expect(screen.getByText(/\+2\.270/)).toBeTruthy();
-    expect(
-      screen
-        .getByRole("link", {
-          name: "Ver los registros que originan la tendencia",
-        })
-        .getAttribute("href"),
-    ).toBe(`/admin/movimientos?${R30}&tipo=otorgamiento`);
-    expect(
-      within(screen.getByRole("table", { name: /por marca/ })).getByText(
-        "4300",
-      ),
-    ).toBeTruthy();
-
-    await userEvent.click(screen.getByRole("button", { name: "Canjes" }));
-    expect(
-      (
-        await screen.findByRole("link", {
-          name: "Ver los registros que originan la tendencia",
-        })
-      ).getAttribute("href"),
-    ).toBe(`/admin/reporte-canjes?${R30}`);
-    expect(urls(r.fetchImpl)).toContain(
-      `/admin/reportes/tendencias?metrica=canjes&${R30}`,
     );
   });
 });

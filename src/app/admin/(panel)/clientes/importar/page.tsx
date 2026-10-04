@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { VencimientoPuntos } from "@/components/admin/vencimiento";
+import { ImportarClientes } from "@/components/admin/importar-clientes";
 
 export const metadata: Metadata = {
-  title: "Vencimiento · Administración",
+  title: "Importar clientes · Administración",
   robots: { index: false, follow: false },
 };
 
 export default function Page() {
-  return <VencimientoPuntos />;
+  return <ImportarClientes />;
 }

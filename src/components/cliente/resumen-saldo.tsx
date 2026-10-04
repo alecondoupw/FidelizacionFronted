@@ -1,4 +1,5 @@
-import { Hourglass, Star } from "lucide-react";
+import { ArrowRight, Hourglass, Star } from "lucide-react";
+import Link from "next/link";
 import type { Saldo } from "@/lib/api/puntos";
 import { formatoFecha, formatoPuntos } from "@/lib/formato";
 import { NOMBRE_MARCA } from "@/lib/marcas";
@@ -8,7 +9,17 @@ import { NOMBRE_MARCA } from "@/lib/marcas";
  * SRC-03 pp. 4–5). Todas las cifras vienen de /me/saldo; la fecha oficial de
  * vencimiento la calcula el backend (DEC-06).
  */
-export function ResumenSaldo({ saldo }: { saldo: Saldo }) {
+const VER_DETALLES =
+  "inline-flex w-fit items-center gap-1 text-sm font-medium text-primary underline-offset-4 hover:underline";
+
+/** `conDetalles`: en Inicio, cada tarjeta enlaza a la consulta por marca (SRC-06 p. 5). */
+export function ResumenSaldo({
+  saldo,
+  conDetalles = false,
+}: {
+  saldo: Saldo;
+  conDetalles?: boolean;
+}) {
   const proximo = saldo.marcas
     .filter((m) => m.proximoVencimiento)
     .map((m) => ({ marca: m.marca, ...m.proximoVencimiento! }))
@@ -38,6 +49,16 @@ export function ResumenSaldo({ saldo }: { saldo: Saldo }) {
               {formatoPuntos(saldo.total)}
             </p>
             <p className="text-sm text-muted-foreground">puntos disponibles</p>
+            {conDetalles && (
+              <Link
+                href="/puntos"
+                className={VER_DETALLES}
+                aria-label="Ver detalles de mis puntos por marca"
+              >
+                Ver detalles{" "}
+                <ArrowRight aria-hidden="true" className="size-4" />
+              </Link>
+            )}
           </div>
         </div>
         {saldo.marcas.length > 0 ? (
@@ -94,6 +115,15 @@ export function ResumenSaldo({ saldo }: { saldo: Saldo }) {
             <p className="text-sm text-muted-foreground">
               No tienes puntos próximos a vencer.
             </p>
+          )}
+          {conDetalles && proximo && (
+            <Link
+              href="/puntos"
+              className={VER_DETALLES}
+              aria-label="Ver detalles de los puntos por vencer"
+            >
+              Ver detalles <ArrowRight aria-hidden="true" className="size-4" />
+            </Link>
           )}
         </div>
       </section>

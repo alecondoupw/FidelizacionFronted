@@ -1,5 +1,5 @@
 import type { Categoria, Disponibilidad, EstadoCanje } from "@/lib/api/canjes";
-import type { Evento, TipoMovimiento, Unidad } from "@/lib/api/puntos";
+import type { Evento, TipoMovimiento } from "@/lib/api/puntos";
 
 /** Zona oficial (DEC-06): el BE calcula; el FE sólo presenta en hora de Bolivia. */
 export const ZONA = "America/La_Paz";
@@ -64,14 +64,21 @@ export const NOMBRE_TIPO: Record<TipoMovimiento, string> = {
   canje: "Canje",
 };
 
-export const NOMBRE_UNIDAD: Record<Unidad, { uno: string; varios: string }> = {
-  dias: { uno: "día", varios: "días" },
-  meses: { uno: "mes", varios: "meses" },
-  anios: { uno: "año", varios: "años" },
-};
+const DIA_LOCAL = new Intl.DateTimeFormat("en-CA", { timeZone: ZONA });
 
-export const periodoTexto = (cantidad: number, unidad: Unidad) =>
-  `${cantidad} ${cantidad === 1 ? NOMBRE_UNIDAD[unidad].uno : NOMBRE_UNIDAD[unidad].varios}`;
+/** Fecha de hoy (AAAA-MM-DD) en hora de Bolivia, para límites de formularios. */
+export const hoyEnBolivia = (ahora = new Date()) => DIA_LOCAL.format(ahora);
+
+/** Suma años a una fecha AAAA-MM-DD; el backend valida el límite exacto. */
+export function sumarAnios(fecha: string, anios: number) {
+  const [a, m, d] = fecha.split("-").map(Number) as [number, number, number];
+  const dia = m === 2 && d === 29 ? 28 : d;
+  return `${a + anios}-${String(m).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
+}
+
+/** «31 dic 2026» a partir de AAAA-MM-DD, sin desfase por zona horaria. */
+export const formatoDia = (fecha: string) =>
+  FECHA.format(new Date(`${fecha}T16:00:00Z`));
 
 /** Descripción legible de un movimiento para el historial del cliente. */
 export function descripcionMovimiento(m: {
@@ -118,6 +125,7 @@ export const NOMBRE_ACCION: Record<string, string> = {
   "administrador.actualizado": "Administrador actualizado",
   "administrador.eliminado": "Administrador eliminado",
   "puntos.ajuste": "Ajuste de puntos",
+  "puntos.asignados": "Puntos sumados por un administrador",
   "canje.entregado": "Canje entregado",
   "canje.anulado": "Canje anulado",
 };
@@ -151,6 +159,19 @@ export function detalleAccion(datos: Record<string, unknown>): string {
   if (marcas && !Array.isArray(marcas) && marcas.despues) {
     partes.push(
       `marcas: ${marcas.despues.length ? marcas.despues.join(", ") : "ninguna"}`,
+    );
+  }
+  // Vínculo agregado por una importación (F8, SRC-06 p. 1).
+  if (
+    datos.origen === "importacion" &&
+    typeof datos.marcaAgregada === "string"
+  ) {
+    partes.push(`marca vinculada por importación: ${datos.marcaAgregada}`);
+  }
+  // Asignación de puntos (DEC-18): cantidad, motivo y vencimiento.
+  if (typeof datos.puntos === "number" && typeof datos.venceEn === "string") {
+    partes.push(
+      `${puntosTexto(datos.puntos)} en ${String(datos.marca)}, vencen el ${formatoFecha(datos.venceEn)}${datos.motivo ? ` · ${String(datos.motivo)}` : ""}`,
     );
   }
   return partes.join(" · ");

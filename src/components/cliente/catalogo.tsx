@@ -49,14 +49,21 @@ function Chip({
  * UI-05 Catálogo (C06, SRC-03 p. 6): sólo beneficios de marcas vinculadas,
  * separados por marca; búsqueda, filtros y disponibilidad del backend.
  */
-export function Catalogo({ marcaInicial }: { marcaInicial?: string }) {
+export function Catalogo({
+  marcaInicial,
+  busquedaInicial = "",
+}: {
+  marcaInicial?: string;
+  /** Texto llegado desde el buscador del Inicio (SRC-06 p. 5 punto 2). */
+  busquedaInicial?: string;
+}) {
   const sesion = useSesion();
   const me = usePerfil();
   const inicial = me.marcas.find((m) => m === marcaInicial);
   const [marca, setMarca] = useState<Marca | undefined>(inicial);
   const [categoria, setCategoria] = useState<Categoria | undefined>();
-  const [texto, setTexto] = useState("");
-  const [q, setQ] = useState("");
+  const [texto, setTexto] = useState(busquedaInicial);
+  const [q, setQ] = useState(busquedaInicial.trim());
 
   useEffect(() => {
     const t = setTimeout(() => setQ(texto.trim()), 300);

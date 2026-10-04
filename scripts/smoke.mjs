@@ -35,7 +35,7 @@ const checks = [
   {
     path: "/admin/registrar",
     marker: "Cargando tu cuenta",
-    ausente: "Aplicar ajuste",
+    ausente: "Revisar y registrar",
   },
   {
     path: "/catalogo?marca=zontes",
@@ -94,9 +94,9 @@ const checks = [
     ausente: "Usuarios con actividad",
   },
   {
-    path: "/admin/tendencias",
+    path: "/admin/clientes/importar",
     marker: "Cargando tu cuenta",
-    ausente: "Periodo anterior",
+    ausente: "Ver vista previa",
   },
   {
     path: "/admin/movimientos?desde=2026-09-01&hasta=2026-09-30&tipo=canje",

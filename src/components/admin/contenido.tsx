@@ -78,7 +78,8 @@ const ventana = (
         : "Sin ventana de publicación";
 
 /**
- * UI-12 Contenido por marca (A09, SRC-02 p. 7, DEC-10): cada marca mantiene
+ * UI-12 Publicaciones por marca (A09, SRC-02 p. 7, DEC-10; nombre de SRC-06
+ * p. 2): cada marca mantiene
  * su contenido; sólo lo activo y vigente llega a sus clientes.
  */
 export function ContenidoAdmin() {
@@ -120,7 +121,7 @@ export function ContenidoAdmin() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <EncabezadoPagina
-          titulo="Contenido por marca"
+          titulo="Publicaciones por marca"
           descripcion="Cada marca mantiene su contenido por separado. Sólo el contenido activo y vigente se muestra a sus clientes."
         />
         <Button className="h-10" onClick={() => setEditando("nueva")}>

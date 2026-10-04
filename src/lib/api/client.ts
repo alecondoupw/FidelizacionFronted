@@ -60,6 +60,12 @@ export interface ApiClient {
     accept: string,
     opciones?: { timeoutMs?: number },
   ): Promise<Blob>;
+  /** Envía un archivo como cuerpo (importaciones) y valida la respuesta JSON. */
+  enviarArchivo<T>(
+    path: string,
+    archivo: Blob,
+    opciones: { schema: z.ZodType<T>; timeoutMs?: number },
+  ): Promise<T>;
 }
 
 const DEFAULT_TIMEOUT_MS = 10_000;
@@ -75,6 +81,8 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
     init: {
       method?: string;
       body?: unknown;
+      /** Cuerpo binario tal cual (no JSON). */
+      archivo?: Blob;
       headers?: Record<string, string>;
       signal?: AbortSignal;
       accept: string;
@@ -87,6 +95,8 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
       ...init.headers,
     };
     if (init.body !== undefined) headers["Content-Type"] = "application/json";
+    if (init.archivo)
+      headers["Content-Type"] = init.archivo.type || "application/octet-stream";
 
     const token = options.getIdToken ? await options.getIdToken() : null;
     if (token) headers.Authorization = `Bearer ${token}`;
@@ -101,7 +111,9 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
       response = await fetchImpl(url, {
         method: init.method ?? "GET",
         headers,
-        body: init.body === undefined ? undefined : JSON.stringify(init.body),
+        body:
+          init.archivo ??
+          (init.body === undefined ? undefined : JSON.stringify(init.body)),
         signal,
         credentials: "omit",
       });
@@ -163,5 +175,30 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
     return response.blob();
   }
 
-  return { baseUrl, request, descargar };
+  async function enviarArchivo<T>(
+    path: string,
+    archivo: Blob,
+    opciones: { schema: z.ZodType<T>; timeoutMs?: number },
+  ): Promise<T> {
+    const response = await enviar(path, {
+      method: "POST",
+      archivo,
+      accept: "application/json",
+      timeoutMs: opciones.timeoutMs,
+    });
+    const parsed = opciones.schema.safeParse(
+      await response.json().catch(() => undefined),
+    );
+    if (!parsed.success) {
+      throw new ApiError({
+        status: response.status,
+        code: "INVALID_RESPONSE",
+        message: "La respuesta del servidor no cumple el contrato esperado.",
+        cause: parsed.error,
+      });
+    }
+    return parsed.data;
+  }
+
+  return { baseUrl, request, descargar, enviarArchivo };
 }

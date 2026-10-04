@@ -104,30 +104,6 @@ export const actividadSchema = z.object({
 });
 export type Actividad = z.infer<typeof actividadSchema>;
 
-export const METRICAS = [
-  "otorgados",
-  "utilizados",
-  "canjes",
-  "registros",
-] as const;
-export type Metrica = (typeof METRICAS)[number];
-const serieSchema = z.object({
-  desde: z.string(),
-  hasta: z.string(),
-  total: z.number(),
-  serie: z.array(z.object({ desde: z.string(), valor: z.number() })),
-});
-export const tendenciasSchema = z.object({
-  metrica: z.enum(METRICAS),
-  marca: marcaSchema.nullable(),
-  granularidad: z.enum(["dia", "semana", "mes"]),
-  actual: serieSchema,
-  anterior: serieSchema,
-  variacion: variacionSchema,
-  porMarca: z.array(z.object({ marca: marcaSchema, total: z.number() })),
-});
-export type Tendencias = z.infer<typeof tendenciasSchema>;
-
 export const reporteCanjesSchema = z.object({
   periodo: periodoSchema,
   total: z.number(),
@@ -190,14 +166,6 @@ export const getResumen = (c: ApiClient) =>
 export const getActividad = (c: ApiClient, q: Rango & { marca?: Marca }) =>
   c.request(`/admin/reportes/actividad${qs({ ...q })}`, {
     schema: actividadSchema,
-  });
-
-export const getTendencias = (
-  c: ApiClient,
-  q: Rango & { marca?: Marca; metrica: Metrica },
-) =>
-  c.request(`/admin/reportes/tendencias${qs({ ...q })}`, {
-    schema: tendenciasSchema,
   });
 
 export const getReporteCanjes = (
