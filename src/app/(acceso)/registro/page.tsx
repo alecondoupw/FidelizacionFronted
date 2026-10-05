@@ -8,12 +8,17 @@ export const metadata: Metadata = { title: "Registro · MOTO LOYALTY" };
 export default function RegistroPage() {
   return (
     <PanelAcceso
+      imagen={{
+        // F9-R04 (SRC-09, DEC-22).
+        src: "/imagenes/registro-cliente.jpg",
+        alt: "Una sola cuenta para todas tus marcas. Únete y comienza a disfrutar de beneficios exclusivos con Zontes, Kiden y NIU.",
+      }}
       pie={
         <p className="text-center text-sm text-muted-foreground">
           ¿Ya tienes una cuenta?{" "}
           <Link
             href="/ingresar"
-            className="font-medium text-primary underline-offset-4 hover:underline"
+            className="font-medium text-acento underline underline-offset-4 hover:decoration-2"
           >
             Inicia sesión
           </Link>

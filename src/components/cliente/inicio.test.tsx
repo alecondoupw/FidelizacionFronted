@@ -95,17 +95,25 @@ function montar(extra: Respuestas = {}) {
   return r;
 }
 
-describe("F8-FE-05 · Inicio cliente (UI-13, SRC-06 pp. 4–5)", () => {
-  it("saludo, banner, saldo informativo y por marca con datos reales", async () => {
+describe("F8-FE-05 / F9-FE-03 · Inicio cliente (UI-13, SRC-06, DEC-20/22)", () => {
+  it("saludo, hero con la imagen R02 y «Ver novedades», saldo informativo y por marca", async () => {
     montar();
     expect(
       await screen.findByRole("heading", { name: "Hola de nuevo, Ana Prueba" }),
     ).toBeTruthy();
+    const hero = screen.getByRole("region", { name: "Destacados" });
+    const imagen = within(hero).getByRole("img");
+    expect(imagen.getAttribute("alt")).toMatch(/Zontes, Kiden y NIU/);
+    expect(decodeURIComponent(imagen.getAttribute("src")!)).toContain(
+      "/imagenes/inicio-hero-zontes-kiden-niu.jpeg",
+    );
+    // Única acción del hero (DEC-20): sin «Explorar catálogo».
     expect(
-      screen
-        .getByRole("link", { name: /Explorar catálogo/ })
-        .getAttribute("href"),
-    ).toBe("/catalogo");
+      within(hero)
+        .getAllByRole("link")
+        .map((a) => [a.textContent, a.getAttribute("href")]),
+    ).toEqual([["Ver novedades", "/novedades"]]);
+    expect(screen.queryByText(/Explorar catálogo/)).toBeNull();
     expect((await screen.findByTestId("saldo-total")).textContent).toBe(
       "1.350",
     );
@@ -124,8 +132,8 @@ describe("F8-FE-05 · Inicio cliente (UI-13, SRC-06 pp. 4–5)", () => {
     }
   });
 
-  it("accesos rápidos, marcas vinculadas y formas de ganar según las reglas", async () => {
-    montar();
+  it("accesos rápidos y marcas vinculadas, sin «¿Cómo ganar puntos?» (DEC-20)", async () => {
+    const { fetchImpl } = montar();
     const accesos = await screen.findByRole("navigation", {
       name: "Accesos rápidos",
     });
@@ -150,14 +158,11 @@ describe("F8-FE-05 · Inicio cliente (UI-13, SRC-06 pp. 4–5)", () => {
         .getByRole("link", { name: "Gestionar marcas" })
         .getAttribute("href"),
     ).toBe("/marcas");
-    const formas = await screen.findByRole("list", {
-      name: "Formas de ganar puntos",
-    });
-    expect(formas.textContent).toContain("Zontes: 100 puntos · NIU: 50 puntos");
-    expect(formas.textContent).toContain("Mantenimiento");
-    // Sin regla activa no se muestran referidos ni eventos (punto 9).
-    expect(formas.textContent).not.toContain("Referido");
-    expect(formas.textContent).not.toContain("Asistencia");
+    expect(screen.queryByText(/Cómo ganar puntos/)).toBeNull();
+    // Las reglas siguen en el backend; Inicio ya no las consulta.
+    expect(
+      fetchImpl.mock.calls.some(([u]) => String(u).endsWith("/reglas")),
+    ).toBe(false);
   });
 
   it("la campana muestra avisos calculados y el banner rota las destacadas", async () => {
@@ -205,7 +210,6 @@ describe("F8-FE-05 · Inicio cliente (UI-13, SRC-06 pp. 4–5)", () => {
   it("estados vacíos y error parcial sin ocultar el resto", async () => {
     montar({
       "GET /me/saldo": errorApi(500, "INTERNAL_ERROR", "Falló."),
-      "GET /reglas": respuesta(200, { items: [] }),
       "GET /contenidos?destacadas=true&limite=5": errorApi(
         500,
         "INTERNAL_ERROR",
@@ -213,14 +217,8 @@ describe("F8-FE-05 · Inicio cliente (UI-13, SRC-06 pp. 4–5)", () => {
       ),
     });
     expect(await screen.findByText("No pudimos cargar tu saldo")).toBeTruthy();
-    expect(
-      await screen.findByText(
-        "Tus marcas aún no tienen formas de acumulación activas.",
-      ),
-    ).toBeTruthy();
-    expect(
-      screen.getByRole("link", { name: /Explorar catálogo/ }),
-    ).toBeTruthy();
+    // Sin destacadas, el hero mantiene su mensaje y «Ver novedades».
+    expect(screen.getByRole("link", { name: "Ver novedades" })).toBeTruthy();
     expect(
       screen.queryByRole("button", { name: "Destacado siguiente" }),
     ).toBeNull();

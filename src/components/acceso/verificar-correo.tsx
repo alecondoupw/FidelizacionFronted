@@ -51,7 +51,7 @@ export function VerificarCorreo() {
       <div className="flex gap-3 rounded-xl bg-secondary p-4">
         <MailCheck
           aria-hidden="true"
-          className="mt-0.5 size-5 shrink-0 text-primary"
+          className="mt-0.5 size-5 shrink-0 text-acento"
         />
         <p className="text-sm text-muted-foreground">
           Enviaremos un enlace a{" "}

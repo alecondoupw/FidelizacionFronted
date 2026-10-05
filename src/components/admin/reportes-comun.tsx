@@ -185,7 +185,7 @@ export function TarjetaKpi({
   const contenido = (
     <>
       <div className="flex items-start justify-between gap-2">
-        <span className="flex size-9 items-center justify-center rounded-xl bg-secondary text-primary">
+        <span className="flex size-9 items-center justify-center rounded-xl bg-secondary text-acento">
           <Icono aria-hidden="true" className="size-4.5" />
         </span>
         {variacion && <TextoVariacion v={variacion} />}

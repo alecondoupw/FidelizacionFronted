@@ -140,7 +140,7 @@ export function GuardiaRol({
         </Alert>
         <Link
           href={destino.ruta}
-          className="w-fit text-sm font-medium text-primary underline underline-offset-4"
+          className="w-fit text-sm font-medium text-acento underline underline-offset-4"
         >
           Ir a {destino.nombre}
         </Link>

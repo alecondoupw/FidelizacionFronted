@@ -90,7 +90,7 @@ function Enlace({ href }: { href: string }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex w-fit items-center gap-1 text-sm font-medium text-primary underline-offset-4 hover:underline"
+      className="inline-flex w-fit items-center gap-1 text-sm font-medium text-acento underline underline-offset-4 hover:decoration-2"
     >
       Más información <ExternalLink aria-hidden="true" className="size-3.5" />
       <span className="sr-only"> (se abre en otra pestaña)</span>
@@ -161,7 +161,7 @@ export function CarruselDestacadas({ items }: { items: PublicacionCliente[] }) {
           {p.enlace && <Enlace href={p.enlace} />}
           <Link
             href={`/novedades?marca=${p.marca}`}
-            className="inline-flex items-center gap-1 text-sm font-medium text-primary underline-offset-4 hover:underline"
+            className="inline-flex items-center gap-1 text-sm font-medium text-acento underline underline-offset-4 hover:decoration-2"
           >
             Ver novedades de {NOMBRE_MARCA[p.marca]}
             <ArrowRight aria-hidden="true" className="size-4" />

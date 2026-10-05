@@ -1,35 +1,21 @@
 "use client";
 
-import { CircleCheck, Gift, Megaphone, Plus, Star, Tags } from "lucide-react";
+import { CircleCheck, Gift, Megaphone, Tags } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 import { usePerfil } from "@/components/acceso/guardia-rol";
 import { EncabezadoPagina } from "@/components/shell/shell";
 import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
-import type { Marca } from "@/lib/api/contract";
-import {
-  guardarMarcaActiva,
-  leerMarcaActiva,
-  NOMBRE_MARCA,
-} from "@/lib/marcas";
-import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
+import { NOMBRE_MARCA } from "@/lib/marcas";
 
 /**
  * UI-17 Mis marcas (C02, SRC-03 pp. 4–5, 8). Sólo muestra las marcas que
- * confirma /me; cada marca enlaza a su catálogo de beneficios (F3).
+ * confirma /me; cada marca enlaza a sus beneficios y novedades. F9 (DEC-20)
+ * retira el control «Marca activa»; la vinculación sólo llega por el correo
+ * importado de cada marca (SRC-06 p. 5 punto 8).
  */
 export function MisMarcas() {
   const me = usePerfil();
-  // Sólo se monta en el navegador, después de que /me responde.
-  const [activa, setActiva] = useState<Marca | null>(() =>
-    leerMarcaActiva(me.marcas),
-  );
-
-  const elegir = (marca: Marca) => {
-    guardarMarcaActiva(marca);
-    setActiva(marca);
-  };
 
   return (
     <>
@@ -43,7 +29,7 @@ export function MisMarcas() {
         className="flex flex-col gap-4 rounded-2xl bg-card p-5 shadow-sm ring-1 ring-border sm:p-6"
       >
         <div className="flex items-start gap-3">
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-acento">
             <Tags aria-hidden="true" className="size-5" />
           </span>
           <div>
@@ -51,8 +37,8 @@ export function MisMarcas() {
               Mis marcas vinculadas
             </h2>
             <p className="text-sm text-muted-foreground">
-              Elige la marca activa para ver su información cuando esté
-              disponible.
+              Cada marca conserva sus puntos, beneficios y novedades por
+              separado.
             </p>
           </div>
         </div>
@@ -68,14 +54,10 @@ export function MisMarcas() {
         ) : (
           <ul className="grid gap-3 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
             {me.marcas.map((marca) => {
-              const esActiva = marca === activa;
               return (
                 <li
                   key={marca}
-                  className={cn(
-                    "flex flex-col gap-4 rounded-xl border p-4",
-                    esActiva && "border-primary ring-1 ring-primary",
-                  )}
+                  className="flex flex-col gap-4 rounded-xl border p-4"
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-xl font-extrabold tracking-tight uppercase">
@@ -86,20 +68,6 @@ export function MisMarcas() {
                       Vinculada
                     </Badge>
                   </div>
-                  {esActiva ? (
-                    <p className="flex items-center gap-2 rounded-lg bg-exito-suave px-3 py-2 text-sm font-semibold text-exito">
-                      <Star aria-hidden="true" className="size-4" />
-                      Marca activa
-                    </p>
-                  ) : (
-                    <Button
-                      variant="secondary"
-                      className="h-9"
-                      onClick={() => elegir(marca)}
-                    >
-                      Usar como marca activa
-                    </Button>
-                  )}
                   <Link
                     href={`/catalogo?marca=${marca}`}
                     className={buttonVariants({
@@ -131,26 +99,16 @@ export function MisMarcas() {
 
       <section
         aria-labelledby="titulo-nueva"
-        className="mt-4 flex flex-col gap-3 rounded-2xl bg-card p-5 shadow-sm ring-1 ring-border sm:flex-row sm:items-center sm:justify-between sm:p-6"
+        className="mt-4 flex flex-col gap-1 rounded-2xl bg-card p-5 shadow-sm ring-1 ring-border sm:p-6"
       >
-        <div>
-          <h2 id="titulo-nueva" className="font-bold">
-            Vincular nueva marca
-          </h2>
-          <p id="nota-vincular" className="text-sm text-muted-foreground">
-            Todavía no está disponible: se habilitará cuando se conecte la base
-            de clientes de las marcas.
-          </p>
-        </div>
-        <Button
-          variant="outline"
-          className="h-10"
-          disabled
-          aria-describedby="nota-vincular"
-        >
-          <Plus aria-hidden="true" />
-          Vincular nueva marca
-        </Button>
+        <h2 id="titulo-nueva" className="font-bold">
+          ¿Te falta una marca?
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Las marcas se vinculan solas cuando tu correo figura como cliente de
+          Zontes, Kiden o NIU. Si eres cliente de otra marca y no aparece aquí,
+          consulta en tu tienda.
+        </p>
       </section>
     </>
   );

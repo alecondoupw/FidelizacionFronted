@@ -166,7 +166,7 @@ export function RegistroCliente() {
             <span
               className={cn(
                 "text-[11px] leading-tight font-semibold sm:text-xs",
-                i === paso ? "text-primary" : "text-muted-foreground",
+                i === paso ? "text-acento" : "text-muted-foreground",
               )}
             >
               {nombre}
@@ -200,7 +200,7 @@ export function RegistroCliente() {
           <div className="flex gap-3 rounded-xl bg-secondary p-4 text-sm">
             <Info
               aria-hidden="true"
-              className="mt-0.5 size-4 shrink-0 text-primary"
+              className="mt-0.5 size-4 shrink-0 text-acento"
             />
             <p>
               Al verificar tu correo buscaremos si ya eres cliente de Zontes,
@@ -266,7 +266,7 @@ export function RegistroCliente() {
           <div className="flex gap-3 rounded-xl bg-secondary p-4">
             <MailCheck
               aria-hidden="true"
-              className="mt-0.5 size-5 shrink-0 text-primary"
+              className="mt-0.5 size-5 shrink-0 text-acento"
             />
             <div className="flex flex-col gap-1 text-sm">
               <p className="font-semibold">Verifica tu correo</p>

@@ -105,7 +105,7 @@ export function ListaMovimientos({ items }: { items: MovimientoVista[] }) {
               key={m.id}
               className="flex items-center gap-3 rounded-xl border p-3"
             >
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-primary">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-acento">
                 <Icono aria-hidden="true" className="size-4" />
               </span>
               <div className="min-w-0 flex-1">

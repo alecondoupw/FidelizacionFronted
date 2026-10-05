@@ -46,8 +46,8 @@ export function Shell({
 
   return (
     <div className="flex min-h-full flex-1">
-      <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col gap-6 border-r bg-sidebar p-5 md:flex">
-        <MarcaApp />
+      <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col gap-6 border-r border-sidebar-border bg-sidebar p-5 text-sidebar-foreground md:flex">
+        <MarcaApp variante="sidebar" />
         <nav
           aria-label="Principal"
           className="-mx-1 flex flex-1 flex-col gap-1 overflow-y-auto px-1"
@@ -55,7 +55,7 @@ export function Shell({
           {items.map(({ href, etiqueta, icono: Icono, grupo }, i) => (
             <Fragment key={href}>
               {grupo && grupo !== items[i - 1]?.grupo && (
-                <p className="px-3 pt-3 pb-1 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase first:pt-0">
+                <p className="px-3 pt-3 pb-1 text-[11px] font-semibold tracking-wide text-sidebar-muted uppercase first:pt-0">
                   {grupo}
                 </p>
               )}
@@ -63,7 +63,7 @@ export function Shell({
                 href={href}
                 aria-current={activo(href) ? "page" : undefined}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
+                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-muted transition-colors hover:bg-white/10 hover:text-sidebar-foreground focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:outline-none",
                   activo(href) &&
                     "bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                 )}
@@ -77,7 +77,7 @@ export function Shell({
         <button
           type="button"
           onClick={cerrarSesion}
-          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-muted transition-colors hover:bg-white/10 hover:text-sidebar-foreground focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:outline-none"
         >
           <LogOut aria-hidden="true" className="size-4.5" />
           Cerrar sesión
@@ -97,7 +97,7 @@ export function Shell({
 
 const VISIBLES_MOVIL = 4;
 const CLASE_BOTON_MOVIL =
-  "flex min-h-14 flex-1 flex-col items-center justify-center gap-1 text-xs font-medium text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none";
+  "flex min-h-14 flex-1 flex-col items-center justify-center gap-1 text-xs font-medium text-sidebar-muted focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:outline-none focus-visible:ring-inset";
 
 /**
  * Barra inferior móvil: las primeras secciones y un menú "Más" con el resto
@@ -175,7 +175,7 @@ function BarraMovil({
       )}
       <nav
         aria-label="Principal móvil"
-        className="fixed inset-x-0 bottom-0 z-20 flex border-t bg-card"
+        className="fixed inset-x-0 bottom-0 z-20 flex border-t border-sidebar-border bg-sidebar"
       >
         {visibles.map(({ href, etiqueta, corta, icono: Icono }) => (
           <Link
@@ -183,7 +183,10 @@ function BarraMovil({
             href={href}
             aria-current={activo(href) ? "page" : undefined}
             aria-label={corta ? etiqueta : undefined}
-            className={cn(CLASE_BOTON_MOVIL, activo(href) && "text-primary")}
+            className={cn(
+              CLASE_BOTON_MOVIL,
+              activo(href) && "font-bold text-sidebar-primary",
+            )}
           >
             <Icono aria-hidden="true" className="size-5" />
             {corta ?? etiqueta}
@@ -197,7 +200,7 @@ function BarraMovil({
             onClick={() => setAbierto((a) => !a)}
             className={cn(
               CLASE_BOTON_MOVIL,
-              (abierto || restoActivo) && "text-primary",
+              (abierto || restoActivo) && "font-bold text-sidebar-primary",
             )}
           >
             <Menu aria-hidden="true" className="size-5" />

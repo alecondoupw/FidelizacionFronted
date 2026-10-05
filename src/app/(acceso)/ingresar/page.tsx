@@ -9,7 +9,13 @@ export default async function IngresarPage({
 }: PageProps<"/ingresar">) {
   const { aviso } = await searchParams;
   return (
-    <PanelAcceso>
+    <PanelAcceso
+      imagen={{
+        // F9-R03 (SRC-09, DEC-22).
+        src: "/imagenes/ingresar-cliente.jpg",
+        alt: "Tu pasión en un solo lugar. Accede a tu cuenta y sigue disfrutando de todos los beneficios de Zontes, Kiden y NIU.",
+      }}
+    >
       <FormularioIngreso
         rol="cliente"
         aviso={typeof aviso === "string" ? aviso : null}

@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { actualizarMiNombre } from "@/lib/api/identidades";
 import { mensajeError } from "@/lib/auth/mensajes";
 import { useSesion } from "@/lib/auth/sesion";
-import { NOMBRE_MARCA } from "@/lib/marcas";
 
 const FECHA = new Intl.DateTimeFormat("es-BO", {
   dateStyle: "medium",
@@ -62,7 +61,7 @@ export function MiPerfil({ rutaAcceso }: { rutaAcceso: string }) {
         descripcion={
           admin
             ? "Cuenta administrativa y sesión."
-            : "Datos de tu cuenta y marcas vinculadas."
+            : "Datos de tu cuenta y sesión."
         }
       />
       {aviso && (
@@ -149,23 +148,11 @@ export function MiPerfil({ rutaAcceso }: { rutaAcceso: string }) {
                 {me.activo ? "Activa" : "Inactiva"}
               </Badge>
             </Fila>
-            {!admin && (
-              <>
-                <Fila etiqueta="Vínculo con clientes existentes">
-                  {me.vinculo === "vinculado" ? "Vinculada" : "Sin vínculo"}
-                </Fila>
-                <Fila etiqueta="Marcas">
-                  {me.marcas.length
-                    ? me.marcas.map((m) => NOMBRE_MARCA[m]).join(", ")
-                    : "Ninguna"}
-                </Fila>
-              </>
-            )}
           </dl>
           <p className="text-xs text-muted-foreground">
             {admin
               ? "El correo de acceso no se cambia desde aquí."
-              : "El correo sólo lo cambia un administrador; al cambiarlo se recalculan tus marcas vinculadas."}
+              : "El correo sólo lo cambia un administrador. Tus marcas están en Mis marcas."}
           </p>
         </Tarjeta>
 
@@ -232,7 +219,7 @@ function Tarjeta({
   return (
     <section className="flex flex-col gap-4 rounded-2xl bg-card p-5 shadow-sm ring-1 ring-border sm:p-6">
       <h2 className="flex items-center gap-3 text-lg font-bold">
-        <span className="flex size-10 items-center justify-center rounded-xl bg-secondary text-primary">
+        <span className="flex size-10 items-center justify-center rounded-xl bg-secondary text-acento">
           {icono}
         </span>
         {titulo}

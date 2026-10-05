@@ -364,4 +364,15 @@ describe("F4-FE-03 · Edición de perfil permitida (UI-18/22, DEC-08)", () => {
       ),
     ).toBeTruthy();
   });
+
+  it("F9-FE-02: la información de cuenta del cliente no muestra vínculo ni marcas", async () => {
+    montar(<MiPerfil rutaAcceso="/ingresar" />, {}, ME_CLIENTE);
+    const tarjeta = (
+      await screen.findByRole("heading", { name: "Información de la cuenta" })
+    ).closest("section")!;
+    expect(tarjeta.textContent).toContain("cliente.zontes@ejemplo.test");
+    expect(tarjeta.textContent).not.toMatch(/Vínculo|vinculad|Zontes ·|Marcas/);
+    expect(tarjeta.textContent).not.toContain("NIU");
+    expect(screen.getByText(/Tus marcas están en Mis marcas/)).toBeTruthy();
+  });
 });

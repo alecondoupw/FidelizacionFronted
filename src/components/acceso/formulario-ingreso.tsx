@@ -167,7 +167,7 @@ export function FormularioIngreso({
           ¿No tienes cuenta?{" "}
           <Link
             href="/registro"
-            className="font-medium text-primary underline-offset-4 hover:underline"
+            className="font-medium text-acento underline underline-offset-4 hover:decoration-2"
           >
             Regístrate
           </Link>

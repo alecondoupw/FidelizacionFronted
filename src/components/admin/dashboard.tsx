@@ -153,7 +153,7 @@ export function Dashboard() {
                   accion={
                     <Link
                       href="/admin/clientes"
-                      className="text-sm font-medium text-primary hover:underline"
+                      className="text-sm font-medium text-acento underline underline-offset-4 hover:decoration-2"
                     >
                       Ver todos
                     </Link>
@@ -200,7 +200,7 @@ export function Dashboard() {
                   accion={
                     <Link
                       href="/admin/reporte-canjes"
-                      className="text-sm font-medium text-primary hover:underline"
+                      className="text-sm font-medium text-acento underline underline-offset-4 hover:decoration-2"
                     >
                       Ver todos
                     </Link>

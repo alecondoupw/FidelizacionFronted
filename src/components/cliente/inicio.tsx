@@ -3,18 +3,15 @@
 import {
   ArrowRight,
   Bell,
-  CalendarDays,
   ChevronLeft,
   ChevronRight,
   Gift,
   History,
   Search,
-  ShoppingBag,
   Ticket,
   UserRound,
-  Users,
-  Wrench,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
@@ -24,19 +21,12 @@ import { SUPERFICIE_MARCA } from "@/components/contenido/publicacion-visual";
 import type { Marca } from "@/lib/api/contract";
 import { getMisCanjes } from "@/lib/api/canjes";
 import { getContenidos, type PublicacionCliente } from "@/lib/api/contenidos";
-import {
-  getReglasCliente,
-  getSaldo,
-  type Evento,
-  type ReglaCliente,
-  type Saldo,
-} from "@/lib/api/puntos";
+import { getSaldo, type Saldo } from "@/lib/api/puntos";
 import { useSesion } from "@/lib/auth/sesion";
 import {
   formatoFecha,
   formatoFechaLarga,
   formatoPuntos,
-  NOMBRE_EVENTO,
   puntosTexto,
 } from "@/lib/formato";
 import { NOMBRE_MARCA } from "@/lib/marcas";
@@ -72,25 +62,14 @@ const ACCESOS = [
   },
 ];
 
-const DESCRIPCION_EVENTO: Record<Evento, string> = {
-  compra: "Acumula puntos al comprar motos, repuestos y accesorios.",
-  referido: "Invita a amigos y suma puntos cuando se unan.",
-  mantenimiento: "Suma puntos con cada servicio en talleres autorizados.",
-  asistencia: "Participa en rutas, lanzamientos y eventos de la marca.",
-};
-const ICONO_EVENTO: Record<Evento, typeof Gift> = {
-  compra: ShoppingBag,
-  referido: Users,
-  mantenimiento: Wrench,
-  asistencia: CalendarDays,
-};
 const DIAS_AVISO = 30;
 
 /**
- * UI-13 Inicio cliente según la referencia de SRC-06 pp. 4–5 (DEC-19): datos
- * reales del cliente, banner ilustrado sin fotos (DEC-11) que rota sus
- * publicaciones destacadas, avisos calculados y formas de ganar puntos de las
- * reglas activas. El total es informativo: cada marca conserva su saldo.
+ * UI-13 Inicio cliente (SRC-06 pp. 4–5, DEC-19; F9: DEC-20/22): datos reales
+ * del cliente, hero con la imagen F9-R02 que rota sus publicaciones
+ * destacadas con «Ver novedades» como única acción, y avisos calculados. Sin
+ * «¿Cómo ganar puntos?» ni «Explorar catálogo» (DEC-20). El total es
+ * informativo: cada marca conserva su saldo.
  */
 export function Inicio() {
   const sesion = useSesion();
@@ -102,7 +81,6 @@ export function Inicio() {
     [me.uid],
   );
   const canjes = useCarga(() => getMisCanjes(api(), { limite: 20 }), [me.uid]);
-  const reglas = useCarga(() => getReglasCliente(api()), [me.uid]);
 
   const listas = <T,>(c: { estado: string; datos?: T }) =>
     c.estado === "listo" ? (c.datos as T) : undefined;
@@ -146,7 +124,7 @@ export function Inicio() {
             href={href}
             className="group flex items-center gap-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-border transition-colors hover:bg-secondary focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
           >
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-secondary text-primary">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-secondary text-acento">
               <Icono aria-hidden="true" className="size-5" />
             </span>
             <span className="min-w-0 flex-1">
@@ -157,49 +135,33 @@ export function Inicio() {
             </span>
             <ArrowRight
               aria-hidden="true"
-              className="size-4 shrink-0 text-primary transition-transform group-hover:translate-x-0.5"
+              className="size-4 shrink-0 text-acento transition-transform group-hover:translate-x-0.5"
             />
           </Link>
         ))}
       </nav>
 
-      <div className="grid gap-4 xl:grid-cols-[3fr_2fr]">
-        <Tarjeta
-          titulo="Mis marcas vinculadas"
-          descripcion="Cada marca conserva sus puntos por separado."
-          accion={
-            <Link
-              href="/marcas"
-              className="text-sm font-medium whitespace-nowrap text-primary underline-offset-4 hover:underline"
-            >
-              Gestionar marcas
-            </Link>
-          }
-        >
-          <EstadoCarga
-            carga={saldo.carga}
-            recargar={saldo.recargar}
-            etiqueta="tus marcas"
-            alto="h-28"
+      <Tarjeta
+        titulo="Mis marcas vinculadas"
+        descripcion="Cada marca conserva sus puntos por separado."
+        accion={
+          <Link
+            href="/marcas"
+            className="text-sm font-medium whitespace-nowrap text-acento underline underline-offset-4 hover:decoration-2"
           >
-            {(s) => <MarcasVinculadas saldo={s} />}
-          </EstadoCarga>
-        </Tarjeta>
-
-        <Tarjeta
-          titulo="¿Cómo ganar puntos?"
-          descripcion="Formas de acumular habilitadas en tus marcas."
+            Gestionar marcas
+          </Link>
+        }
+      >
+        <EstadoCarga
+          carga={saldo.carga}
+          recargar={saldo.recargar}
+          etiqueta="tus marcas"
+          alto="h-28"
         >
-          <EstadoCarga
-            carga={reglas.carga}
-            recargar={reglas.recargar}
-            etiqueta="las formas de ganar puntos"
-            alto="h-28"
-          >
-            {({ items }) => <ComoGanar reglas={items} />}
-          </EstadoCarga>
-        </Tarjeta>
-      </div>
+          {(s) => <MarcasVinculadas saldo={s} />}
+        </EstadoCarga>
+      </Tarjeta>
     </div>
   );
 }
@@ -386,11 +348,25 @@ function Avisos({ avisos }: { avisos: Aviso[] }) {
   );
 }
 
-// ── Banner ────────────────────────────────────────────────────────────
+// ── Hero ──────────────────────────────────────────────────────────────
+/** Imagen F9-R02 aportada por Usuario (SRC-09, DEC-22); copia sin edición. */
+const HERO = {
+  src: "/imagenes/inicio-hero-zontes-kiden-niu.jpeg",
+  ancho: 1600,
+  alto: 533,
+};
+const CLASE_CTA =
+  "inline-flex h-11 w-fit items-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground border border-foreground hover:bg-[color-mix(in_oklch,var(--primary),var(--foreground)_10%)] focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none";
+const CLASE_FLECHA =
+  "flex size-9 items-center justify-center rounded-full bg-card ring-1 ring-border hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none";
+
 /**
- * Pieza visual sin fotos ni logotipos (DEC-11) con el mensaje de fidelización
- * y, a continuación, las publicaciones destacadas vigentes de sus marcas. Sin
- * avance automático (WCAG 2.2.2).
+ * Card hero bajo el encabezado, con la composición de F9-R01: en pantallas
+ * anchas el texto va a la izquierda, sobre el cielo de la imagen, y los
+ * vehículos y logotipos quedan a la derecha sin recortes (proporción 3:1);
+ * en tablet y móvil la imagen va completa arriba y el texto debajo. La
+ * imagen no se filtra ni se recolorea. Rota las publicaciones destacadas sin
+ * avance automático (WCAG 2.2.2); la única acción es «Ver novedades».
  */
 function BannerInicio({
   marcas,
@@ -411,87 +387,91 @@ function BannerInicio({
     <section
       aria-roledescription="carrusel"
       aria-label="Destacados"
-      className="relative overflow-hidden rounded-2xl bg-[linear-gradient(120deg,var(--secondary),color-mix(in_oklab,var(--primary)_22%,var(--card)))] p-5 sm:p-8"
+      className="relative overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border xl:aspect-[3/1]"
     >
-      <div
-        aria-roledescription="diapositiva"
-        aria-label={total > 1 ? `${actual + 1} de ${total}` : undefined}
-        aria-live="polite"
-        className="flex max-w-2xl flex-col gap-3"
-      >
-        {p ? (
-          <>
-            <p className="text-xs font-bold tracking-wide text-primary uppercase">
-              {NOMBRE_MARCA[p.marca]} · Novedad destacada
-            </p>
-            <h2 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
-              {p.titulo}
-            </h2>
-            {p.texto && <p className="text-muted-foreground">{p.texto}</p>}
-            <Link
-              href={`/novedades?marca=${p.marca}`}
-              className="inline-flex h-11 w-fit items-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary/90 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+      <Image
+        src={HERO.src}
+        width={HERO.ancho}
+        height={HERO.alto}
+        alt="Motos de Zontes, Kiden y NIU en una carretera de montaña"
+        sizes="(min-width: 1280px) 960px, (min-width: 768px) calc(100vw - 20rem), 100vw"
+        loading="eager"
+        fetchPriority="high"
+        className="block h-auto w-full xl:absolute xl:inset-0 xl:h-full xl:object-cover"
+      />
+      <div className="relative flex flex-col gap-3 p-5 sm:p-6 xl:h-full xl:max-w-[46%] xl:justify-center xl:bg-gradient-to-r xl:from-white/80 xl:via-white/55 xl:to-transparent xl:p-8">
+        <div
+          aria-roledescription="diapositiva"
+          aria-label={total > 1 ? `${actual + 1} de ${total}` : undefined}
+          aria-live="polite"
+          className="flex flex-col gap-3"
+        >
+          {p ? (
+            <>
+              <p className="text-xs font-bold tracking-wide uppercase">
+                {NOMBRE_MARCA[p.marca]} · Novedad destacada
+              </p>
+              <h2 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
+                {p.titulo}
+              </h2>
+              {p.texto && (
+                <p className="line-clamp-2 text-foreground/80">{p.texto}</p>
+              )}
+              <Link
+                href={`/novedades?marca=${p.marca}`}
+                aria-label={`Ver novedades de ${NOMBRE_MARCA[p.marca]}`}
+                className={CLASE_CTA}
+              >
+                Ver novedades
+                <ArrowRight aria-hidden="true" className="size-4" />
+              </Link>
+            </>
+          ) : (
+            <>
+              <h2 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
+                Tu pasión por las motos tiene más beneficios
+              </h2>
+              <p className="text-foreground/80">
+                Acumula puntos con{" "}
+                {nombres.join(", ").replace(/, ([^,]*)$/, " y $1")} y canjéalos
+                por productos, accesorios y experiencias.
+              </p>
+              <Link href="/novedades" className={CLASE_CTA}>
+                Ver novedades
+                <ArrowRight aria-hidden="true" className="size-4" />
+              </Link>
+            </>
+          )}
+        </div>
+        {total > 1 && (
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setI((actual - 1 + total) % total)}
+              className={CLASE_FLECHA}
+              aria-label="Destacado anterior"
             >
-              Ver novedades de {NOMBRE_MARCA[p.marca]}
-              <ArrowRight aria-hidden="true" className="size-4" />
-            </Link>
-          </>
-        ) : (
-          <>
-            <p
-              aria-hidden="true"
-              className="flex flex-wrap gap-x-4 text-sm font-extrabold tracking-[0.2em] text-primary uppercase"
+              <ChevronLeft aria-hidden="true" className="size-4" />
+            </button>
+            <span className="text-xs font-medium">
+              {actual + 1} / {total}
+            </span>
+            <button
+              type="button"
+              onClick={() => setI((actual + 1) % total)}
+              className={CLASE_FLECHA}
+              aria-label="Destacado siguiente"
             >
-              {nombres.map((n) => (
-                <span key={n}>{n}</span>
-              ))}
-            </p>
-            <h2 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
-              Tu pasión por las motos tiene más beneficios
-            </h2>
-            <p className="text-muted-foreground">
-              Acumula puntos con{" "}
-              {nombres.join(", ").replace(/, ([^,]*)$/, " y $1")} y canjéalos
-              por productos, accesorios y experiencias.
-            </p>
-            <Link
-              href="/catalogo"
-              className="inline-flex h-11 w-fit items-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary/90 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
-            >
-              Explorar catálogo
-              <ArrowRight aria-hidden="true" className="size-4" />
-            </Link>
-          </>
+              <ChevronRight aria-hidden="true" className="size-4" />
+            </button>
+          </div>
         )}
       </div>
-      {total > 1 && (
-        <div className="mt-5 flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setI((actual - 1 + total) % total)}
-            className="flex size-9 items-center justify-center rounded-full bg-card ring-1 ring-border hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
-            aria-label="Destacado anterior"
-          >
-            <ChevronLeft aria-hidden="true" className="size-4" />
-          </button>
-          <span className="text-xs text-muted-foreground">
-            {actual + 1} / {total}
-          </span>
-          <button
-            type="button"
-            onClick={() => setI((actual + 1) % total)}
-            className="flex size-9 items-center justify-center rounded-full bg-card ring-1 ring-border hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
-            aria-label="Destacado siguiente"
-          >
-            <ChevronRight aria-hidden="true" className="size-4" />
-          </button>
-        </div>
-      )}
     </section>
   );
 }
 
-// ── Marcas y formas de ganar ──────────────────────────────────────────
+// ── Marcas vinculadas ──────────────────────────────────────────
 function MarcasVinculadas({ saldo }: { saldo: Saldo }) {
   if (saldo.marcas.length === 0) {
     return (
@@ -535,50 +515,6 @@ function MarcasVinculadas({ saldo }: { saldo: Saldo }) {
           </p>
         </li>
       ))}
-    </ul>
-  );
-}
-
-function ComoGanar({ reglas }: { reglas: ReglaCliente[] }) {
-  const eventos = (Object.keys(DESCRIPCION_EVENTO) as Evento[]).filter((e) =>
-    reglas.some((r) => r.evento === e),
-  );
-  if (eventos.length === 0) {
-    return (
-      <p className="rounded-xl border border-dashed p-5 text-sm text-muted-foreground">
-        Tus marcas aún no tienen formas de acumulación activas.
-      </p>
-    );
-  }
-  return (
-    <ul aria-label="Formas de ganar puntos" className="flex flex-col gap-2">
-      {eventos.map((e) => {
-        const Icono = ICONO_EVENTO[e];
-        return (
-          <li
-            key={e}
-            className="flex items-start gap-3 rounded-xl p-3 ring-1 ring-border"
-          >
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-secondary text-primary">
-              <Icono aria-hidden="true" className="size-4" />
-            </span>
-            <div className="min-w-0">
-              <p className="font-semibold">{NOMBRE_EVENTO[e]}</p>
-              <p className="text-sm text-muted-foreground">
-                {DESCRIPCION_EVENTO[e]}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {reglas
-                  .filter((r) => r.evento === e)
-                  .map(
-                    (r) => `${NOMBRE_MARCA[r.marca]}: ${puntosTexto(r.puntos)}`,
-                  )
-                  .join(" · ")}
-              </p>
-            </div>
-          </li>
-        );
-      })}
     </ul>
   );
 }

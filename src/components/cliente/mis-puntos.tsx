@@ -63,7 +63,7 @@ export function MisPuntos() {
         accion={
           <Link
             href="/historial"
-            className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+            className="text-sm font-medium text-acento underline underline-offset-4 hover:decoration-2"
           >
             Ver historial completo
           </Link>

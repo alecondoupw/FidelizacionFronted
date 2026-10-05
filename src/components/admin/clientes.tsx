@@ -107,7 +107,7 @@ export function Clientes() {
         />
         <Link
           href="/admin/clientes/importar"
-          className="inline-flex h-10 shrink-0 items-center gap-2 self-start rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+          className="inline-flex h-10 shrink-0 items-center gap-2 self-start rounded-lg border border-foreground bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-[color-mix(in_oklch,var(--primary),var(--foreground)_10%)] focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
         >
           <FileUp aria-hidden="true" className="size-4" />
           Importar clientes

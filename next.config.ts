@@ -13,6 +13,10 @@ const CABECERAS_SEGURIDAD = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Sólo se optimizan las imágenes propias de /public/imagenes (F9), sin consulta.
+  images: {
+    localPatterns: [{ pathname: "/imagenes/**", search: "" }],
+  },
   headers() {
     return [{ source: "/:path*", headers: CABECERAS_SEGURIDAD }];
   },

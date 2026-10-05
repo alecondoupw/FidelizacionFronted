@@ -10,7 +10,7 @@ import { NOMBRE_MARCA } from "@/lib/marcas";
  * vencimiento la calcula el backend (DEC-06).
  */
 const VER_DETALLES =
-  "inline-flex w-fit items-center gap-1 text-sm font-medium text-primary underline-offset-4 hover:underline";
+  "inline-flex w-fit items-center gap-1 text-sm font-medium text-acento underline underline-offset-4 hover:decoration-2";
 
 /** `conDetalles`: en Inicio, cada tarjeta enlaza a la consulta por marca (SRC-06 p. 5). */
 export function ResumenSaldo({
@@ -32,7 +32,7 @@ export function ResumenSaldo({
         className="flex flex-col gap-5 rounded-2xl bg-card p-5 shadow-sm ring-1 ring-border sm:flex-row sm:items-center sm:p-6"
       >
         <div className="flex items-start gap-3 sm:min-w-48">
-          <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-secondary text-primary">
+          <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-secondary text-acento">
             <Star aria-hidden="true" className="size-5" />
           </span>
           <div>

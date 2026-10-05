@@ -1,6 +1,5 @@
 // @vitest-environment jsdom
 import { cleanup, screen, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { GuardiaRol } from "@/components/acceso/guardia-rol";
 import {
@@ -38,23 +37,24 @@ describe("F1-FE-02 · Mis marcas (UI-17, C02)", () => {
     expect(lista.textContent).not.toContain("Kiden");
   });
 
-  it("la primera marca es la activa por defecto y se puede cambiar", async () => {
-    montar();
-    await screen.findByRole("list");
-    expect(screen.getAllByText("Marca activa")).toHaveLength(1);
-    await userEvent
-      .setup()
-      .click(screen.getByRole("button", { name: "Usar como marca activa" }));
-    const niu = screen.getAllByRole("listitem")[1]!;
-    expect(within(niu).getByText("Marca activa")).toBeTruthy();
-    expect(window.localStorage.getItem("fidelizacion.marcaActiva")).toBe("niu");
-  });
-
-  it("ignora una marca activa guardada que ya no está vinculada", async () => {
-    window.localStorage.setItem("fidelizacion.marcaActiva", "kiden");
+  it("sin control «Marca activa» (F9, DEC-20); conserva beneficios y novedades por marca", async () => {
+    window.localStorage.setItem("fidelizacion.marcaActiva", "niu");
     montar();
     const zontes = (await screen.findAllByRole("listitem"))[0]!;
-    expect(within(zontes).getByText("Marca activa")).toBeTruthy();
+    expect(screen.queryByText(/Marca activa/i)).toBeNull();
+    expect(screen.queryByRole("button", { name: /marca activa/i })).toBeNull();
+    expect(
+      within(zontes)
+        .getByRole("link", { name: "Ver beneficios de Zontes" })
+        .getAttribute("href"),
+    ).toBe("/catalogo?marca=zontes");
+    expect(
+      within(zontes)
+        .getByRole("link", { name: "Ver novedades de Zontes" })
+        .getAttribute("href"),
+    ).toBe("/novedades?marca=zontes");
+    // Retirar el control no borra la preferencia guardada en el navegador.
+    expect(window.localStorage.getItem("fidelizacion.marcaActiva")).toBe("niu");
   });
 
   it("sin marcas → estado vacío explicativo", async () => {
@@ -64,12 +64,9 @@ describe("F1-FE-02 · Mis marcas (UI-17, C02)", () => {
     ).toBeTruthy();
   });
 
-  it("«Vincular nueva marca» está deshabilitado y explica por qué (DEC-04)", async () => {
+  it("explica que las marcas se vinculan por el correo, sin botón para vincular", async () => {
     montar();
-    const boton = await screen.findByRole("button", {
-      name: /Vincular nueva marca/,
-    });
-    expect(boton.hasAttribute("disabled")).toBe(true);
-    expect(boton.getAttribute("aria-describedby")).toBe("nota-vincular");
+    expect(await screen.findByText("¿Te falta una marca?")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /Vincular/ })).toBeNull();
   });
 });

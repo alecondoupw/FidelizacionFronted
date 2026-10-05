@@ -22,6 +22,9 @@
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
+  --color-sidebar-muted: var(--sidebar-muted);
+  --color-acento: var(--acento);
+  --color-zontes-rojo: var(--zontes-rojo);
   --color-chart-5: var(--chart-5);
   --color-chart-4: var(--chart-4);
   --color-chart-3: var(--chart-3);
@@ -52,50 +55,60 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Tokens provisionales de la guía visual (SRC-02 pp. 8–9, SRC-03 p. 10).
-   La identidad final depende de DEC-11. */
+/* Paleta Zontes (DEC-21, aprobada por Usuario el 2026-10-05) sobre la guía
+   visual SRC-02/03. Tinta, lima, blanco y rojo observados en el sitio oficial;
+   neutros derivados. Lima sólo como fondo con texto tinta (nunca texto blanco
+   sobre lima). Éxito, aviso y error, y los colores de marca de los datos
+   (chart-*), no cambian. Logotipos, fotos y fuentes: DEC-11. */
 :root {
-  --background: #f7f7fb;
-  --foreground: #111827;
+  --zontes-tinta: #1a1a1a;
+  --zontes-lima: #dcfc36;
+  --zontes-rojo: #d2253d;
+  --background: #f7f8f3;
+  --foreground: #1a1a1a;
   --card: #ffffff;
-  --card-foreground: #111827;
+  --card-foreground: #1a1a1a;
   --popover: #ffffff;
-  --popover-foreground: #111827;
-  --primary: #4f46e5;
-  --primary-foreground: #ffffff;
-  --secondary: #eef0ff;
-  --secondary-foreground: #3730a3;
-  --muted: #f1f3f7;
-  --muted-foreground: #5b6377;
-  --accent: #eef0ff;
-  --accent-foreground: #3730a3;
+  --popover-foreground: #1a1a1a;
+  --primary: #dcfc36;
+  --primary-foreground: #1a1a1a;
+  --secondary: #eef1e6;
+  --secondary-foreground: #1a1a1a;
+  --muted: #eef1e6;
+  --muted-foreground: #4b5563;
+  --accent: #eef1e6;
+  --accent-foreground: #1a1a1a;
+  /* Texto e iconos de acento sobre superficies claras. */
+  --acento: #1a1a1a;
   --destructive: #dc2626;
   --exito: #15803d;
   --exito-suave: #e8f7ee;
   --aviso: #b45309;
   --aviso-suave: #fff4e5;
-  --border: #e6e9f1;
-  --input: #dfe3ec;
-  --ring: #4f46e5;
+  --border: #dde2d4;
+  --input: #67735a;
+  --ring: #1a1a1a;
   --chart-1: #4f46e5;
   --chart-2: #7c3aed;
   --chart-3: #0ea5e9;
   --chart-4: #16a34a;
   --chart-5: #f59e0b;
   --radius: 0.75rem;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #111827;
-  --sidebar-primary: #4f46e5;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #eef0ff;
-  --sidebar-accent-foreground: #3730a3;
-  --sidebar-border: #eceef4;
-  --sidebar-ring: #4f46e5;
+  /* Sidebar y barra móvil en tinta; la sección activa en lima. */
+  --sidebar: #1a1a1a;
+  --sidebar-foreground: #ffffff;
+  --sidebar-muted: #c9ccc2;
+  --sidebar-primary: #dcfc36;
+  --sidebar-primary-foreground: #1a1a1a;
+  --sidebar-accent: #dcfc36;
+  --sidebar-accent-foreground: #1a1a1a;
+  --sidebar-border: #2e2e2e;
+  --sidebar-ring: #dcfc36;
 }
 
-/* El panel administrativo usa el fondo frío de SRC-02 p. 8. */
+/* Mismo fondo en ambos roles: comparten tokens de identidad (F9). */
 .tema-admin {
-  --background: #f1f3f7;
+  --background: #f7f8f3;
 }
 
 .dark {

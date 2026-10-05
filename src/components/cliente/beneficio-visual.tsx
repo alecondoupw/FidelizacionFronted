@@ -24,7 +24,7 @@ export function IlustracionBeneficio({
     <div
       aria-hidden="true"
       className={cn(
-        "flex items-center justify-center rounded-xl bg-secondary text-primary",
+        "flex items-center justify-center rounded-xl bg-secondary text-acento",
         className,
       )}
     >
