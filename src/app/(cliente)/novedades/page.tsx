@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Novedades } from "@/components/cliente/novedades";
 
-export const metadata: Metadata = { title: "Novedades · MOTO LOYALTY" };
+export const metadata: Metadata = { title: "Novedades · Zontes" };
 
 export default async function Page(props: PageProps<"/novedades">) {
   const { marca } = await props.searchParams;

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Catalogo } from "@/components/cliente/catalogo";
 
-export const metadata: Metadata = { title: "Catálogo · MOTO LOYALTY" };
+export const metadata: Metadata = { title: "Catálogo · Zontes" };
 
 export default async function Page(props: PageProps<"/catalogo">) {
   const { marca, q } = await props.searchParams;

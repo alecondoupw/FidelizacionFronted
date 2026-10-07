@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { FormularioIngreso } from "@/components/acceso/formulario-ingreso";
 import { PanelAcceso } from "@/components/acceso/panel-acceso";
 
-export const metadata: Metadata = { title: "Iniciar sesión · MOTO LOYALTY" };
+export const metadata: Metadata = { title: "Iniciar sesión · Zontes" };
 
 export default async function IngresarPage({
   searchParams,
@@ -10,6 +10,7 @@ export default async function IngresarPage({
   const { aviso } = await searchParams;
   return (
     <PanelAcceso
+      tipoIngreso="cliente"
       imagen={{
         // F9-R03 (SRC-09, DEC-22).
         src: "/imagenes/ingresar-cliente.jpg",

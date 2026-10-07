@@ -1,12 +1,7 @@
-import { Bike } from "lucide-react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-/**
- * Distintivo de la aplicación. En el sidebar de cliente y administrador dice
- * «Zontes» junto al icono (DEC-20, F9); las pantallas de acceso conservan la
- * identidad de referencia «MOTO LOYALTY» de SRC-04/05. Logotipos reales:
- * DEC-11.
- */
+/** Distintivo de Zontes compartido por las pantallas de acceso y los sidebars. */
 export function MarcaApp({
   className,
   variante = "acceso",
@@ -14,37 +9,29 @@ export function MarcaApp({
   className?: string;
   variante?: "acceso" | "sidebar";
 }) {
-  if (variante === "sidebar") {
-    return (
-      <div className={cn("flex items-center gap-3", className)}>
-        <span
-          aria-hidden="true"
-          className="flex size-10 items-center justify-center rounded-xl bg-sidebar-primary text-sidebar-primary-foreground"
-        >
-          <Bike className="size-5" />
-        </span>
+  return (
+    <div className={cn("flex items-center gap-3", className)}>
+      <Image
+        src="/imagenes/zontesIcon.jpg"
+        alt=""
+        width={40}
+        height={40}
+        className="size-10 shrink-0 rounded-xl object-contain"
+      />
+      {variante === "sidebar" ? (
         <span className="text-lg font-extrabold tracking-tight text-sidebar-foreground">
           Zontes
         </span>
-      </div>
-    );
-  }
-  return (
-    <div className={cn("flex items-center gap-3", className)}>
-      <span
-        aria-hidden="true"
-        className="flex size-10 items-center justify-center rounded-xl bg-foreground text-primary"
-      >
-        <Bike className="size-5" />
-      </span>
-      <span className="flex flex-col leading-tight">
-        <span className="text-sm font-extrabold tracking-tight whitespace-nowrap">
-          MOTO LOYALTY
+      ) : (
+        <span className="flex flex-col leading-tight">
+          <span className="text-sm font-extrabold tracking-tight whitespace-nowrap">
+            Zontes
+          </span>
+          <span className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
+            Fidelización
+          </span>
         </span>
-        <span className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
-          Fidelización
-        </span>
-      </span>
+      )}
     </div>
   );
 }

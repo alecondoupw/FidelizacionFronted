@@ -3,7 +3,7 @@ import { FormularioIngreso } from "@/components/acceso/formulario-ingreso";
 import { PanelAcceso } from "@/components/acceso/panel-acceso";
 
 export const metadata: Metadata = {
-  title: "Acceso de administración · MOTO LOYALTY",
+  title: "Acceso de administración · Zontes",
   robots: { index: false, follow: false },
 };
 
@@ -12,7 +12,7 @@ export default async function AdminIngresarPage({
 }: PageProps<"/admin/ingresar">) {
   const { aviso } = await searchParams;
   return (
-    <PanelAcceso admin>
+    <PanelAcceso admin tipoIngreso="administrador">
       <FormularioIngreso
         rol="administrador"
         aviso={typeof aviso === "string" ? aviso : null}

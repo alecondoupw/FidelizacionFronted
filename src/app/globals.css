@@ -156,3 +156,10 @@
     @apply font-sans;
   }
 }
+
+/* La app instalada ya tiene su icono y no necesita el aviso de instalación. */
+@media (display-mode: standalone), (display-mode: fullscreen) {
+  .aviso-instalacion {
+    display: none;
+  }
+}

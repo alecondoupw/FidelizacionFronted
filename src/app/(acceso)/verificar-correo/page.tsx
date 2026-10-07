@@ -3,7 +3,7 @@ import { PanelAcceso } from "@/components/acceso/panel-acceso";
 import { VerificarCorreo } from "@/components/acceso/verificar-correo";
 
 export const metadata: Metadata = {
-  title: "Verifica tu correo · MOTO LOYALTY",
+  title: "Verifica tu correo · Zontes",
 };
 
 export default function VerificarCorreoPage() {

@@ -41,3 +41,10 @@ Vercel (DEC-13): importar el repositorio, cargar `NEXT_PUBLIC_API_BASE_URL` y la
 - **Firebase:** sólo el SDK cliente para Authentication (`src/lib/firebase`). `firebase/firestore`, `firebase/storage` y `firebase-admin` están prohibidos por ESLint: los datos pasan siempre por Express.
 - **Variables:** ver `.env.example`. Las `NEXT_PUBLIC_*` se insertan en el build.
 - **UI:** Tailwind CSS 4 + shadcn/ui (`components.json`, estilo `base-nova`) + Lucide. Las vistas se construyen por UI-ID según el mapa de vistas del Core.
+
+## Demo Zontes — 2026-10-07
+
+Identidad Zontes, acceso único entre roles, banner admin centrado y PWA con instalación e instrucciones para Safari. La caché offline contiene sólo recursos públicos; los módulos requieren internet.
+
+- [Cambios y evidencia](https://github.com/alecondoupw/FidelizacionDoc/blob/main/Zontes-Core/05-Desarrollo/Cambios%20frontend%20-%20identidad%20Zontes%20y%20PWA.md).
+- [Configuración de Render y Vercel](https://github.com/alecondoupw/FidelizacionDoc/blob/main/Zontes-Core/08-Produccion/Guia%20rapida%20-%20Render%20Vercel%20y%20demo%202026-10-07.md).

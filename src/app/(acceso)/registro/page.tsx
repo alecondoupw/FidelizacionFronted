@@ -3,7 +3,7 @@ import Link from "next/link";
 import { PanelAcceso } from "@/components/acceso/panel-acceso";
 import { RegistroCliente } from "@/components/acceso/registro-cliente";
 
-export const metadata: Metadata = { title: "Registro · MOTO LOYALTY" };
+export const metadata: Metadata = { title: "Registro · Zontes" };
 
 export default function RegistroPage() {
   return (
